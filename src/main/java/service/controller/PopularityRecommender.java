@@ -28,7 +28,6 @@ public class PopularityRecommender implements Recommender {
                 arrayList.add(new Node(key, Integer.valueOf(value)));
             }
         }
-//        jedis.close();
         Collections.sort(arrayList);
         ArrayList<String> hotList = new ArrayList<>();
         for (int i = 0, size = Math.min(arrayList.size(), 10); i < size; ++i) {
@@ -40,9 +39,6 @@ public class PopularityRecommender implements Recommender {
     private static class Node implements Comparable<Node> {
         String name;
         int hot;
-
-        Node() {
-        }
 
         Node(String name, int hot) {
             this.name = name;

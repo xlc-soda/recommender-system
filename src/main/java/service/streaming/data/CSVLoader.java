@@ -31,7 +31,7 @@ public class CSVLoader extends BaseLoader {
 
     private static Boolean[] hasHeaders = new Boolean[]{true, true, false, true};
 
-    private List<String> list = Arrays.asList(new String[]{"Significance (Significance, #1)",
+    private List<String> list = Arrays.asList("Significance (Significance, #1)",
             "Accordance (Significance, #2)", "My Brilliant Friend (The Neapolitan Novels #1)",
             "Where I Belong (Alabama Summer, #1)", "Confess", "I Capture the Castle",
             "Timequake", "Assassin's Quest (Farseer Trilogy, #3)",
@@ -42,10 +42,9 @@ public class CSVLoader extends BaseLoader {
             "Short Stories from Hogwarts of Heroism, Hardship and Dangerous Hobbies (Pottermore Presents, #1)",
             "Short Stories from Hogwarts of Power, Politics and Pesky Poltergeists (Pottermore Presents, #2)",
             "Hollowland (The Hollows, #1)", "Bossman", "Vicious (Sinners of Saint, #1)",
-            "Norse Mythology", "The Underground Railroad"});
+            "Norse Mythology", "The Underground Railroad");
 
     private KafkaProducer<String, String> kafkaProducer = KafkaUtil.getProducer();
-    ;
 
     public CSVLoader() {
         super();

@@ -34,16 +34,16 @@ public class RedisUtil {
     }
 
     public static Jedis getConnection() {
-        if(false) {
-            Jedis jedis = threadLocal.get();
-            if (null == jedis) {
-                jedis = jedisPool.getResource();
-                threadLocal.set(jedis);
-            }
-            return jedis;
-        } else {
-            return new Jedis("master");
+//        if(false) {
+        Jedis jedis = threadLocal.get();
+        if (null == jedis) {
+            jedis = jedisPool.getResource();
+            threadLocal.set(jedis);
         }
+        return jedis;
+//        } else {
+//            return new Jedis("master");
+//        }
     }
 
     public static void closeConnection() {
