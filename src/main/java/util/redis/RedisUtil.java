@@ -3,6 +3,7 @@ package util.redis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import util.Configs;
 
 public class RedisUtil {
     private static ThreadLocal<Jedis> threadLocal = new ThreadLocal<>();
@@ -15,7 +16,7 @@ public class RedisUtil {
         jedisPoolConfig.setMaxWaitMillis(1500);
         jedisPoolConfig.setTestOnBorrow(true);
         jedisPoolConfig.setTestOnReturn(true);
-        jedisPool = new JedisPool(jedisPoolConfig, "master");
+        jedisPool = new JedisPool(jedisPoolConfig, Configs.MASTER_HOST);
     }
 
     private RedisUtil() {}
