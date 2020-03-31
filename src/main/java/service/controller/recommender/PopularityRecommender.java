@@ -1,4 +1,4 @@
-package service.controller;
+package service.controller.recommender;
 
 import com.alibaba.fastjson.JSON;
 import org.springframework.web.bind.annotation.RequestMapping;
