@@ -9,6 +9,7 @@ public class RedisUtil {
     private static ThreadLocal<Jedis> threadLocal = new ThreadLocal<>();
     private static JedisPool jedisPool;
 
+
     static {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(100);

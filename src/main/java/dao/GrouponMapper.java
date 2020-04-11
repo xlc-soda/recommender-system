@@ -50,4 +50,6 @@ public interface GrouponMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Groupon record);
+
+    Groupon selectByOrderId(Integer id);
 }

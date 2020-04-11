@@ -1,5 +1,6 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Collect;
 
 public interface CollectMapper {
@@ -50,4 +51,6 @@ public interface CollectMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Collect record);
+
+    Collect selectByUser(@Param("userId") Integer userId, @Param("valueId") Integer valueId);
 }

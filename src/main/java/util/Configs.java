@@ -1,6 +1,17 @@
 package util;
 
+import java.util.HashMap;
+
 public class Configs {
+
+    public static HashMap<String, String> hosts = new HashMap<>();
+    public static String USER_FIELD = "user";
+
+    static {
+        hosts.put("master", "172.16.29.65");
+        hosts.put("slave1", "172.16.29.64");
+        hosts.put("slave2", "172.16.29.66");
+    }
 
     public static final String MASTER_HOST = "172.16.29.65";
     public static final String SLAVE_1_HOST = "172.16.29.64";

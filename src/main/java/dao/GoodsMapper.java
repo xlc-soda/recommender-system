@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Goods;
+
+import java.util.List;
 
 public interface GoodsMapper {
     /**
@@ -58,4 +61,12 @@ public interface GoodsMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Goods record);
+
+    List<Goods> getGoodsList(@Param("isNew") Boolean isNew, @Param("isHot") Boolean isHot,
+                             @Param("keyword") String keyword, @Param("brandId") Integer brandId,
+                             @Param("categoryId") Integer categoryId, @Param("page") Integer page,
+                             @Param("limit") Integer limit, @Param("sort") String sort,
+                             @Param("order") String order);
+
+    int getGoodsCount();
 }
