@@ -274,4 +274,19 @@
     where username = #{username,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR}
   </select>
+
+  <select id="selectByUsernameOrMobile" resultMap="BaseResultMap">
+    select *
+    from librecmall_user
+    where
+    <set>
+      <if test="username != null">
+        username = #{username, jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile, jdbcType=VARCHAR}
+      </if>
+    </set>
+    limit #{page, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER}
+  </select>
 </mapper>

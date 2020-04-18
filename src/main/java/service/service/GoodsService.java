@@ -9,6 +9,7 @@ import pojo.*;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -66,6 +67,43 @@ public class GoodsService {
             item.put("isHot", goods.getIsHot());
             item.put("counterPrice", goods.getCounterPrice());
             item.put("retailPrice", goods.getRetailPrice());
+            jsonArray.add(item);
+        }
+        data.put("list", jsonArray);
+        return jsonService.getJsonResult(0, "成功", data);
+    }
+
+    public String getGoodsListAdmin(int goodsId, String goodsSn, String name, int page,
+                               int limit, String sort, String order) {
+        List<Goods> goodsList = goodsMapper.getGoodsListAdmin(goodsId, goodsSn, name, page * limit, limit, sort, order);
+        JSONObject data = new JSONObject();
+        data.put("total", goodsList.size());
+        data.put("pages", page);
+        data.put("limit", limit);
+        JSONArray jsonArray = new JSONArray();
+        for (Goods goods : goodsList) {
+            JSONObject item = new JSONObject();
+            item.put("id", goods.getId());
+            item.put("goodsSn", goods.getGoodsSn());
+            item.put("name", goods.getId());
+            item.put("categoryId", goods.getCategoryId());
+            item.put("brandId", goods.getBrandId());
+            item.put("gallery", goods.getGallery());
+            item.put("keywords", goods.getKeywords());
+            item.put("brief", goods.getBrief());
+            item.put("isOnSale", goods.getIsOnSale());
+            item.put("sortOrder", goods.getSortOrder());
+            item.put("picUrl", goods.getPicUrl());
+            item.put("shareUrl", goods.getShareUrl());
+            item.put("isNew", goods.getIsNew());
+            item.put("isHot", goods.getIsHot());
+            item.put("unit", goods.getUnit());
+            item.put("counterPrice", goods.getCounterPrice());
+            item.put("retailPrice", goods.getRetailPrice());
+            item.put("addTime", goods.getAddTime());
+            item.put("updateTime", goods.getUpdateTime());
+            item.put("deleted", goods.getDeleted());
+            item.put("detail", goods.getDetail());
             jsonArray.add(item);
         }
         data.put("list", jsonArray);
@@ -244,5 +282,217 @@ public class GoodsService {
 
     public String getGoodsCount() {
         return String.valueOf(goodsMapper.getGoodsCount());
+    }
+
+    public String updateGoodsDetail(JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
+        boolean success = true;
+        success &= updateGoods(goodsArray);
+        success &= updateGoodsSpecification(specifications);
+        success &= updateGoodsProduct(products);
+        success &= updateGoodsAttribute(attributes);
+        if(success) {
+            return jsonService.getJsonResult(501, "失败");
+        } else {
+            return jsonService.getJsonResult(0, "成功");
+        }
+    }
+
+    private boolean updateGoods(JSONArray goodsArray) {
+        boolean success = true;
+        for(JSONObject object: goodsArray.toJavaList(JSONObject.class)) {
+            Goods goods = goodsMapper.selectByPrimaryKey(object.getInteger("id"));
+            goods.setGoodsSn(object.getString("goodsSn"));
+            goods.setName(object.getString("name"));
+            goods.setCategoryId(object.getInteger("categoryId"));
+            goods.setBrandId(object.getInteger("brandId"));
+            goods.setGallery(object.getString("gallery"));
+            goods.setKeywords(object.getString("keywords"));
+            goods.setBrief(object.getString("brief"));
+            goods.setIsOnSale(object.getBooleanValue("isOnSale"));
+            goods.setSortOrder(object.getShort("sortOrder"));
+            goods.setPicUrl(object.getString("picUrl"));
+            goods.setShareUrl(object.getString("shareUrl"));
+            goods.setIsNew(object.getBoolean("isNew"));
+            goods.setIsHot(object.getBoolean("isHot"));
+            goods.setUnit(object.getString("unit"));
+            goods.setCounterPrice(object.getBigDecimal("counterPrice"));
+            goods.setRetailPrice(object.getBigDecimal("retailPrice"));
+            goods.setAddTime(object.getDate("addTime"));
+            goods.setUpdateTime(new Date());
+            goods.setDeleted(object.getBoolean("deleted"));
+            goods.setDetail(object.getString("detail"));
+            if(goodsMapper.updateByPrimaryKeySelective(goods) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    private boolean updateGoodsSpecification(JSONArray specifications) {
+        boolean success = true;
+        for(JSONObject object: specifications.toJavaList(JSONObject.class)) {
+            GoodsSpecification goodsSpecification = goodsSpecificationMapper.selectByPrimaryKey(object.getInteger("value"));
+            goodsSpecification.setPicUrl(object.getString("picUrl"));
+            if(goodsSpecificationMapper.updateByPrimaryKeySelective(goodsSpecification) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    private boolean updateGoodsProduct(JSONArray products) {
+        boolean success = true;
+        for(JSONObject object: products.toJavaList(JSONObject.class)) {
+            GoodsProduct goodsProduct = goodsProductMapper.selectByPrimaryKey(object.getInteger("id"));
+            goodsProduct.setPrice(object.getBigDecimal("price"));
+            goodsProduct.setNumber(object.getInteger("number"));
+            goodsProduct.setUrl(object.getString("url"));
+            if(goodsProductMapper.updateByPrimaryKeySelective(goodsProduct) == 0) {
+                success = false;
+            }
+        }
+        return success;
+
+    }
+
+    private boolean updateGoodsAttribute(JSONArray attributes) {
+        boolean success = true;
+        for(JSONObject object: attributes.toJavaList(JSONObject.class)) {
+            GoodsAttribute goodsAttribute = goodsAttributeMapper.selectByPrimaryKey(object.getInteger("id"));
+            goodsAttribute.setGoodsId(object.getInteger("goodsId"));
+            goodsAttribute.setAttribute(object.getString("attribute"));
+            goodsAttribute.setValue(object.getString("value"));
+            goodsAttribute.setAddTime(object.getDate("addTime"));
+            goodsAttribute.setUpdateTime(new Date());
+            goodsAttribute.setDeleted(object.getBoolean("deleted"));
+            if(goodsAttributeMapper.updateByPrimaryKeySelective(goodsAttribute) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    public String createGoodsDetail(JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
+        boolean success = true;
+        success &= createGoods(goodsArray);
+        success &= createGoodsSpecification(specifications);
+        success &= createGoodsProduct(products);
+        success &= createGoodsAttribute(attributes);
+        if(success) {
+            return jsonService.getJsonResult(501, "失败");
+        } else {
+            return jsonService.getJsonResult(0, "成功");
+        }
+    }
+
+    private boolean createGoods(JSONArray goodsArray) {
+        boolean success = true;
+        for(JSONObject object: goodsArray.toJavaList(JSONObject.class)) {
+            Goods goods = new Goods();
+            goods.setId(null);
+            goods.setGoodsSn(object.getString("goodsSn"));
+            goods.setName(object.getString("name"));
+            goods.setGallery(object.getString("gallery"));
+            goods.setGallery(object.getString("gallery"));
+            goods.setPicUrl(object.getString("picUrl"));
+            goods.setIsNew(object.getBoolean("isNew"));
+            goods.setIsHot(object.getBoolean("isHot"));
+            goods.setIsOnSale(object.getBoolean("isOnSale"));
+            Date date = new Date();
+            goods.setAddTime(date);
+            goods.setUpdateTime(date);
+            goods.setDeleted(false);
+            if(goodsMapper.insertSelective(goods) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    private boolean createGoodsSpecification(JSONArray specifications) {
+        boolean success = true;
+        for(JSONObject object: specifications.toJavaList(JSONObject.class)) {
+            GoodsSpecification goodsSpecification = new GoodsSpecification();
+            goodsSpecification.setGoodsId(object.getInteger("id"));
+            goodsSpecification.setSpecification(object.getString("specification"));
+            goodsSpecification.setValue(object.getString("value"));
+            goodsSpecification.setPicUrl(object.getString("picUrl"));
+            goodsSpecification.setDeleted(false);
+            if(goodsSpecificationMapper.insertSelective(goodsSpecification) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    private boolean createGoodsProduct(JSONArray products) {
+        boolean success = true;
+        for(JSONObject object: products.toJavaList(JSONObject.class)) {
+            GoodsProduct goodsProduct = new GoodsProduct();
+            goodsProduct.setId(object.getInteger("id"));
+            goodsProduct.setSpecifications(object.getString("specification"));
+            goodsProduct.setPrice(object.getBigDecimal("price"));
+            goodsProduct.setNumber(object.getInteger("number"));
+            goodsProduct.setUrl(object.getString("url"));
+            goodsProduct.setDeleted(false);
+            if(goodsProductMapper.insertSelective(goodsProduct) == 0) {
+                success = false;
+            }
+        }
+        return success;
+
+    }
+
+    private boolean createGoodsAttribute(JSONArray attributes) {
+        boolean success = true;
+        for(JSONObject object: attributes.toJavaList(JSONObject.class)) {
+            GoodsAttribute goodsAttribute = new GoodsAttribute();
+            goodsAttribute.setGoodsId(object.getInteger("id"));
+            goodsAttribute.setAttribute(object.getString("attribute"));
+            goodsAttribute.setValue(object.getString("value"));
+            Date date = new Date();
+            goodsAttribute.setAddTime(date);
+            goodsAttribute.setUpdateTime(date);
+            goodsAttribute.setDeleted(false);
+            if(goodsAttributeMapper.insertSelective(goodsAttribute) == 0) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+    public String deleteGoods(int goodsId) {
+        if(goodsMapper.deleteByPrimaryKey(goodsId) == 0) {
+            return jsonService.getJsonResult(501, "失败");
+        } else {
+            return jsonService.getJsonResult(0, "成功");
+        }
+    }
+
+    public String getGoodsDetailAdmin(Integer goodsId) {
+        Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+        JSONObject data = new JSONObject();
+        data.put("id", goods.getId());
+        data.put("goodsSn", goods.getGoodsSn());
+        data.put("name", goods.getName());
+        data.put("categoryId", goods.getCategoryId());
+        data.put("brandId", goods.getBrandId());
+        data.put("gallery", goods.getGallery());
+        data.put("keywords", goods.getKeywords());
+        data.put("brief", goods.getBrief());
+        data.put("isOnSale", goods.getIsOnSale());
+        data.put("sortOrder", goods.getSortOrder());
+        data.put("picUrl", goods.getPicUrl());
+        data.put("shareUrl", goods.getShareUrl());
+        data.put("isNew", goods.getIsNew());
+        data.put("isHot", goods.getIsHot());
+        data.put("unit", goods.getUnit());
+        data.put("counterPrice", goods.getCounterPrice());
+        data.put("retailPrice", goods.getRetailPrice());
+        data.put("addTime", goods.getAddTime());
+        data.put("updateTime", goods.getUpdateTime());
+        data.put("deleted", goods.getDeleted());
+        data.put("detail", goods.getDetail());
+        return jsonService.getJsonResult(0, "成功", data);
     }
 }

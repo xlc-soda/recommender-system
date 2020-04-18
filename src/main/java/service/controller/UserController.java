@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import service.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -49,6 +50,19 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/wx/auth/profile", method = {RequestMethod.POST})
     public String updateProfile(HttpSession session, @RequestBody JSONObject jsonObject) {
         return userService.updateProfile(session.getId(), jsonObject);
+    }
+
+    @RequestMapping(value = "/admin/user/list", method = {RequestMethod.GET})
+    public String listUser(HttpServletRequest httpServletRequest) {
+        String username = httpServletRequest.getParameter("username");
+        String mobile = httpServletRequest.getParameter("mobile");
+        return userService.listUser(username, mobile, startPage, pageLimit);
+    }
+
+    @RequestMapping(value = "/admin/user/delete", method = {RequestMethod.GET})
+    public String deleteUser(HttpServletRequest httpServletRequest) {
+        int userId = Integer.valueOf(httpServletRequest.getParameter("id"));
+        return userService.deleteUser(userId);
     }
 
 }

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import service.service.CartService;
 
 @RestController
-public class CartController {
+public class CartController extends BaseController {
 
     @Autowired
     private CartService cartService;

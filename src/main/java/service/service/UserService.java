@@ -1,5 +1,6 @@
 package service.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import pojo.User;
 import redis.clients.jedis.Jedis;
 import util.Configs;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -112,5 +115,45 @@ public class UserService {
         String userID = jedis.hget(sessionId, Configs.USER_FIELD);
         jedis.close();
         return userMapper.selectByPrimaryKey(Integer.valueOf(userID));
+    }
+
+    public String listUser(String username, String mobile, int page, int limit) {
+        JSONObject data = new JSONObject();
+        JSONArray list = new JSONArray();
+        List<User> users = userMapper.selectByUsernameOrMobile(username, mobile, page * limit, limit);
+        for(User user: users) {
+            JSONObject object = new JSONObject();
+            object.put("id", user.getId());
+            object.put("username", user.getUsername());
+            object.put("password", user.getPassword());
+            object.put("gender", user.getGender());
+            object.put("lastLoginTime", user.getLastLoginTime());
+            object.put("lastLoginIp", user.getLastLoginIp());
+            object.put("userLevel", user.getUserLevel());
+            object.put("nickname", user.getNickname());
+            object.put("mobile", user.getMobile());
+            object.put("avatar", user.getAvatar());
+            object.put("weixinOpenid", user.getWeixinOpenid());
+            object.put("sessionKey", user.getSessionKey());
+            object.put("status", user.getStatus());
+            object.put("addTime", user.getAddTime());
+            object.put("updateTime", user.getUpdateTime());
+            object.put("deleted", user.getDeleted());
+            list.add(object);
+        }
+        data.put("total", list.size());
+        data.put("pages", (list.size() + page - 1) / page);
+        data.put("limit", limit);
+        data.put("page", page);
+        data.put("list", list);
+        return jsonService.getJsonResult(0, "成功", data);
+    }
+
+    public String deleteUser(int userId) {
+        if(userMapper.deleteByPrimaryKey(userId) == 0) {
+            return jsonService.getJsonResult(501, "失败");
+        } else {
+            return jsonService.getJsonResult(0, "成功");
+        }
     }
 }

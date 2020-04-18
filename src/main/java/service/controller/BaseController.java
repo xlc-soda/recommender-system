@@ -1,8 +1,8 @@
 package service.controller;
 
 public abstract class BaseController {
-    private Integer startPage = 1;
-    private Integer pageLimit = 10;
-    private String sortDefault = "Id";
-    private String orderDefault = "asc";
+    Integer startPage = 0;
+    Integer pageLimit = 20;
+    String sortDefault = "id";
+    String orderDefault = "asc";
 }

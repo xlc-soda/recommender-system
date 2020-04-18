@@ -68,5 +68,11 @@ public interface GoodsMapper {
                              @Param("limit") Integer limit, @Param("sort") String sort,
                              @Param("order") String order);
 
+
+    List<Goods> getGoodsListAdmin(@Param("goodsId") Integer goodsId, @Param("goodsSn") String goodsSn,
+                             @Param("name") String name, @Param("page") Integer page,
+                             @Param("limit") Integer limit, @Param("sort") String sort,
+                             @Param("order") String order);
+
     int getGoodsCount();
 }

@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.User;
+
+import java.util.List;
 
 public interface UserMapper {
     /**
@@ -52,4 +55,7 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     User selectByPassword(User record);
+
+    List<User> selectByUsernameOrMobile(@Param("username") String username, @Param("mobile") String mobile,
+                                        @Param("page") Integer page, @Param("limit") Integer limit);
 }
