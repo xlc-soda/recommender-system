@@ -1,14 +1,22 @@
 package service.service;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.api.WxMaUserService;
+import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.UserMapper;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.User;
 import redis.clients.jedis.Jedis;
 import util.Configs;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -154,6 +162,67 @@ public class UserService {
             return jsonService.getJsonResult(501, "失败");
         } else {
             return jsonService.getJsonResult(0, "成功");
+        }
+    }
+
+    public String loginByWeixin(String appid, String secret, String code, JSONObject userInfo, String rawData,
+                                String signature, String encryptedData, String iv) {
+        WxMaDefaultConfigImpl wxMaDefaultConfig = new WxMaDefaultConfigImpl();
+        wxMaDefaultConfig.setAppid(appid);
+        wxMaDefaultConfig.setSecret(secret);
+        wxMaDefaultConfig.setAccessToken(code);
+        WxMaService wxMaService = new WxMaServiceImpl();
+        wxMaService.setWxMaConfig(wxMaDefaultConfig);
+        WxMaJscode2SessionResult wxMaJscode2SessionResult;
+        String sessionKey, unionId;
+        try {
+             wxMaJscode2SessionResult = wxMaService.jsCode2SessionInfo(code);
+             sessionKey = wxMaJscode2SessionResult.getSessionKey();
+             unionId = wxMaJscode2SessionResult.getUnionid();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+            return jsonService.getJsonResult(501, "失败");
+        }
+        WxMaUserService wxMaUserService = wxMaService.getUserService();
+        if(wxMaUserService.checkUserInfo(sessionKey, rawData, signature)) {
+            WxMaUserInfo userInfo1 = wxMaUserService.getUserInfo(sessionKey, encryptedData, iv);
+            String openId = userInfo1.getOpenId();
+            JSONObject.toJSONString(userInfo1);
+            userInfo.put("openId", openId);
+            userInfo.put("unionId", unionId);
+            JSONObject data = new JSONObject();
+            data.put("token", openId);
+            data.put("userInfo", userInfo);
+            User user = new User();
+            // TODO: 确认微信登录时用户名如何存储
+            user.setUsername("");
+            // TODO: 确认微信登录时密码如何存储
+            user.setPassword("");
+            user.setGender(Byte.valueOf(userInfo1.getGender().equalsIgnoreCase("male")? "1": "2"));
+            // TODO: 确认微信登录时生日如何存储
+            Date date = new Date();
+            user.setBirthday(date);
+            user.setLastLoginTime(date);
+            // TODO: 确认微信登录时ip如何存储
+            user.setLastLoginIp("");
+            user.setUserLevel(Byte.valueOf("0"));
+            user.setNickname(userInfo1.getNickName());
+            // TODO: 确认微信登录时手机如何存储
+            user.setMobile("");
+            user.setAvatar(userInfo1.getAvatarUrl());
+            user.setWeixinOpenid(openId);
+            user.setSessionKey(sessionKey);
+            user.setStatus(Byte.valueOf("0"));
+            user.setAddTime(date);
+            user.setUpdateTime(date);
+            user.setDeleted(false);
+            if(userMapper.insertSelective(user) == 0) {
+                return jsonService.getJsonResult(501, "失败");
+            } else {
+                return jsonService.getJsonResult(0, "成功", data);
+            }
+        } else {
+            return jsonService.getJsonResult(501, "失败");
         }
     }
 }

@@ -216,6 +216,5 @@
             <artifactId>weixin-java-miniapp</artifactId>
             <version>3.7.6.B</version>
         </dependency>
-
     </dependencies>
 </project>

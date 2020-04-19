@@ -65,4 +65,17 @@ public class UserController extends BaseController {
         return userService.deleteUser(userId);
     }
 
+    @RequestMapping(value = "/wx/auth/login_by_weixin", method = {RequestMethod.POST})
+    public String loginByWeixin(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String appid = jsonObject.getString("appid");
+        String secret = jsonObject.getString("secret");
+        String code = jsonObject.getString("code");
+        JSONObject userInfo = jsonObject.getJSONObject("userInfo");
+        String rawData = jsonObject.getString("rawData");
+        String signature = jsonObject.getString("signature");
+        String encryptedData = jsonObject.getString("encryptedData");
+        String iv = jsonObject.getString("iv");
+        return userService.loginByWeixin(appid, secret, code, userInfo, rawData, signature, encryptedData, iv);
+    }
+
 }
