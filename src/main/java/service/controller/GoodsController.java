@@ -95,14 +95,14 @@ public class GoodsController extends BaseController {
     }
 
     @RequestMapping(value = "/admin/goods/delete", method = RequestMethod.POST)
-    public String deleteGoods(HttpServletRequest httpServletRequest) {
-        int goodsId = Integer.valueOf(httpServletRequest.getParameter("id"));
+    public String deleteGoods(@RequestBody JSONObject jsonObject) {
+        int goodsId = jsonObject.getInteger("id");
         return goodsService.deleteGoods(goodsId);
     }
 
     @RequestMapping(value = "/admin/goods/detail", method = RequestMethod.GET)
-    public String getGoodsDetailAdmin(HttpSession session, HttpServletRequest httpServletRequest) {
-        int goodsId = Integer.valueOf(httpServletRequest.getParameter("id"));
+    public String getGoodsDetailAdmin(@RequestBody JSONObject jsonObject) {
+        int goodsId = jsonObject.getInteger("id");
         return goodsService.getGoodsDetailAdmin(goodsId);
     }
 }

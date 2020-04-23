@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Coupon;
+
+import java.util.List;
 
 public interface CouponMapper {
     /**
@@ -50,4 +53,8 @@ public interface CouponMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Coupon record);
+
+    List<Coupon> getAllCoupons(@Param("page") Integer page, @Param("limit") Integer limit);
+
+    void selectByPrimaryKey();
 }

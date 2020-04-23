@@ -1,4 +1,4 @@
-package recommendation.factorization;
+package recommendation.fm;
 
 import java.io.IOException;
 import java.util.ArrayList;

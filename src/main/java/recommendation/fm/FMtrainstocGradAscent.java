@@ -1,4 +1,4 @@
-package recommendation.factorization;
+package recommendation.fm;
 
 import java.util.HashMap;
 import java.util.Map;

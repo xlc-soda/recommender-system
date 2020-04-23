@@ -30,7 +30,7 @@ public class UserService {
 
     public String login(String sessionId, JSONObject jsonObject) {
         User user = getUser(jsonObject);
-        if(null == user) {
+        if(null != user) {
             JSONObject userInfo = new JSONObject();
             userInfo.put("nickName", user.getNickname());
             userInfo.put("avatarUrl", user.getAvatar());
@@ -126,6 +126,9 @@ public class UserService {
     }
 
     public String listUser(String username, String mobile, int page, int limit) {
+        if("".equals(username) && "".equals(mobile)) {
+            return jsonService.getJsonResult(401, "请保证用户名和手机号至少一个不为空");
+        }
         JSONObject data = new JSONObject();
         JSONArray list = new JSONArray();
         List<User> users = userMapper.selectByUsernameOrMobile(username, mobile, page * limit, limit);
@@ -198,7 +201,8 @@ public class UserService {
             user.setUsername("");
             // TODO: 确认微信登录时密码如何存储
             user.setPassword("");
-            user.setGender(Byte.valueOf(userInfo1.getGender().equalsIgnoreCase("male")? "1": "2"));
+            // TODO: 测试性别
+            user.setGender(Byte.valueOf(userInfo1.getGender()));
             // TODO: 确认微信登录时生日如何存储
             Date date = new Date();
             user.setBirthday(date);

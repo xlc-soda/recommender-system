@@ -239,4 +239,10 @@
       deleted = #{deleted,jdbcType=BIT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getAllTopics" resultMap="BaseResultMap">
+    select *
+    from librecmall_topic
+    limit #{page, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER};
+  </select>
 </mapper>

@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Brand;
+
+import java.util.List;
 
 public interface BrandMapper {
     /**
@@ -50,4 +53,6 @@ public interface BrandMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Brand record);
+
+    List<Brand> getAllBrands(@Param("page") Integer page, @Param("limit") Integer limit);
 }

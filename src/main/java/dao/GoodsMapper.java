@@ -74,5 +74,11 @@ public interface GoodsMapper {
                              @Param("limit") Integer limit, @Param("sort") String sort,
                              @Param("order") String order);
 
+    List<Goods> getLatestGoods(@Param("page") Integer page, @Param("limit") Integer limit);
+
+    List<Goods> getHotGoods(@Param("page") Integer page, @Param("limit") Integer limit);
+
+    List<Goods> getFloorGoods();
+
     int getGoodsCount();
 }

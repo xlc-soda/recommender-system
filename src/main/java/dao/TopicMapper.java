@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Topic;
+
+import java.util.List;
 
 public interface TopicMapper {
     /**
@@ -58,4 +61,6 @@ public interface TopicMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Topic record);
+
+    List<Topic> getAllTopics(@Param("page") Integer page, @Param("limit") Integer limit);
 }

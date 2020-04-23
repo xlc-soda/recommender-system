@@ -419,4 +419,25 @@
     from librecmall_goods
     where 1
   </select>
+
+  <select id="getLatestGoods" resultMap="BaseResultMap">
+    select *
+    from librecmall_goods
+    where is_new = 1
+    order by add_time desc limit #{page, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER};
+  </select>
+
+  <select id="getHotGoods" resultMap="BaseResultMap">
+    select *
+    from librecmall_goods
+    where is_hot = 1
+    order by add_time desc limit #{page, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER};
+  </select>
+
+  <select id="getFloorGoods" resultMap="BaseResultMap">
+    select *
+    from librecmall_goods
+    where counter_price > retail_price
+    ORDER BY category_id;
+  </select>
 </mapper>

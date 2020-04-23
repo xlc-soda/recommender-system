@@ -209,7 +209,6 @@ public class OrderService {
         // TODO: 积分减免
         order.setIntegralPrice(BigDecimal.valueOf(0));
         // grouponPrice
-        // TODO: 团购优惠价减免
         order.setGrouponPrice(BigDecimal.valueOf(0));
         // orderPrice
         // = goods_price + freight_price - coupon_price

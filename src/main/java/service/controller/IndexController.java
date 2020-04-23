@@ -18,6 +18,6 @@ public class IndexController extends BaseController {
 
     @RequestMapping(value = "/wx/home/index", method = RequestMethod.GET)
     public String index(HttpSession session, @RequestBody JSONObject jsonObject) {
-        return indexService.index(session.getId(), jsonObject);
+        return indexService.index(session.getId(), jsonObject, startPage, pageLimit);
     }
 }

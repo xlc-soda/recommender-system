@@ -1,4 +1,4 @@
-package recommendation.factorization;
+package recommendation.fm;
 
 public class Sigmoid {
     public static double sigmoid(double x) {

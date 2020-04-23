@@ -1,4 +1,4 @@
-package recommendation.collaborate;
+package recommendation.mf;
 
 public class CollaborativeFilter {
     private static int[][] rate_set = {{5, 5, 0, 0}, {5, -1, -1, 0},
@@ -17,7 +17,7 @@ public class CollaborativeFilter {
         init();
         int i, j, k, times = 0;
         // 学习的次数
-        while (times < 100) {
+        while (times < 1000) {
             show(times++);
 
             // 对x矩阵的参数x[i][k]求偏导数
@@ -39,8 +39,7 @@ public class CollaborativeFilter {
                     theta_partial[j][k] = 0.0;
                     for (i = 0; i < m; i++) {
                         if (rate_set[i][j] != -1) {
-                            theta_partial[j][k] += (getPredict(i, j) - rate_set[i][j])
-                                    * x[i][k];
+                            theta_partial[j][k] += (getPredict(i, j) - rate_set[i][j]) * x[i][k];
                         }
                     }
                     theta_partial[j][k] += lambda * theta[j][k];

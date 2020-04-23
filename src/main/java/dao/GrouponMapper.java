@@ -1,6 +1,9 @@
 package dao;
 
+import org.apache.ibatis.annotations.Param;
 import pojo.Groupon;
+
+import java.util.List;
 
 public interface GrouponMapper {
     /**
@@ -52,4 +55,6 @@ public interface GrouponMapper {
     int updateByPrimaryKey(Groupon record);
 
     Groupon selectByOrderId(Integer id);
+
+    List<Groupon> getAllGroupons(@Param("page") Integer page, @Param("limit") Integer limit);
 }

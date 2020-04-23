@@ -1,4 +1,4 @@
-package recommendation.factorization;
+package recommendation.fm;
 
 import java.io.File;
 import java.io.FileInputStream;
