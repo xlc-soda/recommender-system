@@ -16,17 +16,17 @@ public class Matrix {
         return row;
     }
 
-    public void setRow(int row) {
-        this.row = row;
-    }
+//    public void setRow(int row) {
+//        this.row = row;
+//    }
 
     public int getColumn() {
         return column;
     }
 
-    public void setColumn(int column) {
-        this.column = column;
-    }
+//    public void setColumn(int column) {
+//        this.column = column;
+//    }
 
     public Matrix(int row, int column) {
         this.row = row;
@@ -34,7 +34,27 @@ public class Matrix {
         num = new double[row][column];
         for (int i = 0; i < row; ++i) {
             for (int j = 0; j < column; ++j) {
-                this.num[i][j] = 0;
+                num[i][j] = 0;
+            }
+        }
+    }
+
+    public Matrix(int row, int column, Matrix mat) {
+        if(mat.getRow() < row || mat.getColumn() < column) {
+            throw new IllegalArgumentException("The row and column cannot be smaller than the matrix's");
+        }
+        this.row = row;
+        this.column = column;
+        num = new double[row][column];
+        for (int i = 0; i < mat.getRow(); ++i) {
+            System.arraycopy(mat.num[i], 0, num[i], 0, mat.getColumn());
+            for (int j = mat.getColumn(); j < column; ++j) {
+                num[i][j] = 0;
+            }
+        }
+        for (int i = mat.getRow(); i < row; ++i) {
+            for (int j = 0; j < column; ++j) {
+                num[i][j] = 0;
             }
         }
     }
@@ -47,7 +67,7 @@ public class Matrix {
             Random random = new Random();
             for (int i = 0; i < row; ++i) {
                 for (int j = 0; j < column; ++j) {
-                    this.num[i][j] = random.nextDouble();
+                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
                 }
             }
         } else {
@@ -91,9 +111,9 @@ public class Matrix {
         }
         Matrix answer = new Matrix(row, mat.getColumn());
         for (int i = 0; i < row; ++i) {
-            for (int j = 0; j < column; ++j) {
+            for (int j = 0; j < mat.getColumn(); ++j) {
                 answer.num[i][j] = 0;
-                for (int k = 0; k < mat.getColumn(); ++k) {
+                for (int k = 0; k < column; ++k) {
                     answer.num[i][j] += num[i][k] * mat.num[k][j];
                 }
             }
@@ -107,10 +127,10 @@ public class Matrix {
         }
         Matrix answer = new Matrix(row, mat.getColumn());
         for (int i = 0; i < row; ++i) {
-            for (int j = 0; j < column; ++j) {
+            for (int j = 0; j < mat.getColumn(); ++j) {
                 answer.num[i][j] = 0;
-                for (int k = 0; k < mat.getColumn(); ++k) {
-                    answer.num[i][j] = (answer.num[i][j] + num[i][k] * mat.num[k][j]) % MOD;
+                for (int k = 0; k < column; ++k) {
+                    answer.num[i][j] = (num[i][k] * mat.num[k][j] + answer.num[i][j]) % MOD;
                 }
             }
         }
