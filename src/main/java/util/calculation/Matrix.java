@@ -40,7 +40,7 @@ public class Matrix {
     }
 
     public Matrix(int row, int column, Matrix mat, boolean setRandom) {
-        if(mat.getRow() < row || mat.getColumn() < column) {
+        if(mat.getRow() > row || mat.getColumn() > column) {
             throw new IllegalArgumentException("The row and column cannot be smaller than the matrix's");
         }
         this.row = row;
@@ -137,8 +137,8 @@ public class Matrix {
             throw new IllegalArgumentException("The length of this array does not equal to the column of matrix("
                     + column + ")" );
         }
-        double[] answer = new double[arr.length];
-        for(int i = 0; i < arr.length; ++i) {
+        double[] answer = new double[this.row];
+        for(int i = 0; i < this.row; ++i) {
             answer[i] = 0;
             for(int j = 0; j < arr.length; ++j) {
                 answer[i] += this.num[i][j] * arr[j];
@@ -228,15 +228,13 @@ public class Matrix {
     }
 
     public Matrix addColumn(double[] newArr) {
-        if(newArr.length != column) {
+        if(newArr.length != this.row) {
             throw new IllegalArgumentException("The length of this array does not equal to the column of matrix("
                     + column + ")" );
         }
-        Matrix answer = new Matrix(row, column + 1, this, false);
-        for(int i = 0; i < row; ++i) {
-            for(int j = 0; j < column; ++j) {
-                answer.num[i][j] = newArr[j];
-            }
+        Matrix answer = new Matrix(this.row, this.column + 1, this, false);
+        for(int i = 0; i < this.row; ++i) {
+            answer.num[i][this.column - 1] = newArr[i];
         }
         return answer;
     }

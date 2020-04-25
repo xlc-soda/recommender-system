@@ -3,7 +3,10 @@ package recommendation.mf;
 import util.calculation.Matrix;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class NonNegativeMatrixFactorization {
 
@@ -29,6 +32,8 @@ public class NonNegativeMatrixFactorization {
             this.rate = rate;
         }
     }
+
+    public NonNegativeMatrixFactorization() {}
 
     public NonNegativeMatrixFactorization(Matrix v) {
         this.V = v;
@@ -74,8 +79,8 @@ public class NonNegativeMatrixFactorization {
         V.print();
     }
 
-    public void trainIncr(double[] newArr) {
-        trainIncr(newArr, this.eps);
+    public void trainIncr(double[] vK) {
+        trainIncr(vK, this.eps);
     }
 
     // TODO: finish this method incr
@@ -93,9 +98,9 @@ public class NonNegativeMatrixFactorization {
         Matrix HT = H.transpose();
         double temp = 0;
         for(int count = 1; count <= round; ++count) {
-            Matrix a = new Matrix(V.getRow(), hK.length);
-            for (int i = 0; i < V.getRow(); ++i) {
-                for (int j = 0; j < hK.length; ++i) {
+            Matrix a = new Matrix(vK.length, hK.length);
+            for (int i = 0; i < vK.length; ++i) {
+                for (int j = 0; j < hK.length; ++j) {
                     a.num[i][j] = vK[i] * hK[j];
                 }
             }
