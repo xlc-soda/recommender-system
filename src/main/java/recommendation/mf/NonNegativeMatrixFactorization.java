@@ -3,7 +3,7 @@ package recommendation.mf;
 import util.calculation.Matrix;
 
 import java.io.*;
-import java.util.Random;
+import java.util.*;
 
 public class NonNegativeMatrixFactorization {
 
@@ -20,6 +20,15 @@ public class NonNegativeMatrixFactorization {
     private int base;
 
     private int round = 100;
+
+    private static class Node {
+        public Integer iid;
+        public Double rate;
+        public Node(int iid, double rate) {
+            this.iid = iid;
+            this.rate = rate;
+        }
+    }
 
     public NonNegativeMatrixFactorization(Matrix v) {
         this.V = v;
@@ -116,6 +125,7 @@ public class NonNegativeMatrixFactorization {
             System.out.println("train(incr) round: " + count + " loss: " + temp);
         }
         H = H.addColumn(hK);
+        V = V.addColumn(vK);
 //        System.out.println("W:");
 //        W.print();
 //        System.out.println("H:");
@@ -174,4 +184,31 @@ public class NonNegativeMatrixFactorization {
         }
         return answer + loss();
     }
+
+    public List<Integer> recommend(int uid) {
+        Matrix result = W.multiply(H);
+        ArrayList<Node> recommend = new ArrayList<>();
+        for(int i = 0; i < V.getRow(); ++i) {
+            if(0 == V.num[i][uid - 1]) {
+                recommend.add(new Node(i + 1, result.num[i][uid - 1]));
+            }
+        }
+        Collections.sort(recommend, new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+                int answer = o1.rate.compareTo(o2.rate);
+                if(0 == answer) {
+                    return o1.iid.compareTo(o2.iid);
+                } else {
+                    return answer;
+                }
+            }
+        });
+        ArrayList<Integer> iidList = new ArrayList<>();
+        for(Node node: recommend) {
+            iidList.add(node.iid);
+        }
+        return iidList;
+    }
+
 }
