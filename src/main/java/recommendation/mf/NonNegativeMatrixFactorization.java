@@ -3,6 +3,7 @@ package recommendation.mf;
 import util.calculation.Matrix;
 
 import java.io.*;
+import java.util.Random;
 
 public class NonNegativeMatrixFactorization {
 
@@ -11,6 +12,10 @@ public class NonNegativeMatrixFactorization {
     private Matrix W, H;
 
     private int row, column;
+
+    private double alpha = 1.0, beta = 1.0;
+
+    private double eps = 1e-3;
 
     private int base;
 
@@ -60,12 +65,72 @@ public class NonNegativeMatrixFactorization {
         V.print();
     }
 
+    public void trainIncr(double[] newArr) {
+        trainIncr(newArr, this.eps);
+    }
+
+    // TODO: finish this method incr
+
+    /**
+     * train with new data
+     * @param vK new column of matrix V (actually is V_(k+1) )
+     * @param eps limit to stop iteration
+     */
+    public void trainIncr(double[] vK, double eps) {
+        double[] hK = new double[H.getRow()];
+        for(int i = 0; i < hK.length; ++i) {
+            hK[i] = H.num[i][H.getColumn() - 1];
+        }
+        Matrix HT = H.transpose();
+        double temp = 0;
+        for(int count = 1; count <= round; ++count) {
+            Matrix a = new Matrix(V.getRow(), hK.length);
+            for (int i = 0; i < V.getRow(); ++i) {
+                for (int j = 0; j < hK.length; ++i) {
+                    a.num[i][j] = vK[i] * hK[j];
+                }
+            }
+            a = a.add(V.multiply(HT)); // a: V.row * H.row(which is base)
+            Matrix b = new Matrix(hK.length, hK.length);
+            for (int i = 0; i < hK.length; ++i) {
+                for (int j = 0; j < hK.length; ++j) {
+                    b.num[i][j] = hK[i] * hK[j];
+                }
+            }
+            b = W.multiply(b).add(W.multiply(H).multiply(HT));
+            Matrix WT = W.transpose();
+            double[] c = WT.multiply(vK);
+            double[] d = WT.multiply(W).multiply(hK);
+            for(int i = 0; i < W.getRow(); ++i) {
+                for(int j = 0; j < W.getColumn(); ++j) {
+                    W.num[i][j] *= a.num[i][j] / (b.num[i][j] + alpha);
+                }
+            }
+            for(int i = 0; i < hK.length; ++i) {
+                hK[i] *= c[i] / (d[i] + beta);
+            }
+            // balabala
+            if((temp = lossIncr(vK, hK)) < eps) {
+                break;
+            }
+            System.out.println("train(incr) round: " + count + " loss: " + temp);
+        }
+        H = H.addColumn(hK);
+//        System.out.println("W:");
+//        W.print();
+//        System.out.println("H:");
+//        H.print();
+    }
+
     public void train() {
+        train(this.eps);
+    }
+
+    public void train(double eps) {
         base = Math.max((row * column) / (row + column), 1);
         W = new Matrix(row, base, true);
         H = new Matrix(base, column, true);
-        double eps = 1e-3;
-        double norm = 0;
+        double temp = 0;
         for(int count = 1; count <= round; ++count) {
             Matrix WT = W.transpose();
             Matrix a = WT.multiply(V);
@@ -83,16 +148,30 @@ public class NonNegativeMatrixFactorization {
                     W.num[i][j] *= c.num[i][j] / d.num[i][j];
                 }
             }
-            Matrix pre = W.multiply(H);
-            Matrix E = V.substract(pre);
-            if((norm = E.norm2()) < eps) {
+            if((temp = loss()) < eps) {
                 break;
             }
-            System.out.println("round " + count + " norm2: " + norm);
+            System.out.println("train round: " + count + " loss: " + temp);
         }
-        System.out.println("W:");
-        W.print();
-        System.out.println("H:");
-        H.print();
+//        System.out.println("W:");
+//        W.print();
+//        System.out.println("H:");
+//        H.print();
+    }
+
+    private double loss() {
+        return V.substract(W.multiply(H)).norm2Pow() * 0.5 + alpha * W.norm1() + beta * H.norm1();
+    }
+
+    private double lossIncr(double[] vK, double[] hK) {
+        double answer = 0;
+        double[] temp = W.multiply(hK);
+        for(int i = 0; i < vK.length; ++i) {
+            answer += 0.5 * Math.pow(vK[i] - temp[i], 2);
+        }
+        for(int i = 0; i < hK.length; ++i) {
+            answer += beta * hK[i];
+        }
+        return answer + loss();
     }
 }

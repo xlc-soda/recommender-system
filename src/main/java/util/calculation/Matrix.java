@@ -39,22 +39,33 @@ public class Matrix {
         }
     }
 
-    public Matrix(int row, int column, Matrix mat) {
+    public Matrix(int row, int column, Matrix mat, boolean setRandom) {
         if(mat.getRow() < row || mat.getColumn() < column) {
             throw new IllegalArgumentException("The row and column cannot be smaller than the matrix's");
         }
         this.row = row;
         this.column = column;
-        num = new double[row][column];
+        this.num = new double[row][column];
+        Random random = new Random();
         for (int i = 0; i < mat.getRow(); ++i) {
-            System.arraycopy(mat.num[i], 0, num[i], 0, mat.getColumn());
+            for (int j = 0; j < mat.getColumn(); ++j) {
+                this.num[i][j] = mat.num[i][j];
+            }
             for (int j = mat.getColumn(); j < column; ++j) {
-                num[i][j] = 0;
+                if(setRandom) {
+                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
+                } else {
+                    this.num[i][j] = 0;
+                }
             }
         }
         for (int i = mat.getRow(); i < row; ++i) {
             for (int j = 0; j < column; ++j) {
-                num[i][j] = 0;
+                if(setRandom) {
+                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
+                } else {
+                    this.num[i][j] = 0;
+                }
             }
         }
     }
@@ -121,6 +132,21 @@ public class Matrix {
         return answer;
     }
 
+    public double[] multiply(double[] arr) {
+        if(arr.length != this.column) {
+            throw new IllegalArgumentException("The length of this array does not equal to the column of matrix("
+                    + column + ")" );
+        }
+        double[] answer = new double[arr.length];
+        for(int i = 0; i < arr.length; ++i) {
+            answer[i] = 0;
+            for(int j = 0; j < arr.length; ++j) {
+                answer[i] += this.num[i][j] * arr[j];
+            }
+        }
+        return answer; // length = this.row
+    }
+
     private Matrix multiplyWithMod(Matrix mat) {
         if(this.column != mat.getRow()) {
             throw new IllegalArgumentException("This matrix cannot be the argument of multiply");
@@ -172,14 +198,24 @@ public class Matrix {
         return answer;
     }
 
-    public double norm2() {
+    public double norm2Pow() {
         double answer = 0;
         for(int i = 0; i < row; ++i) {
             for(int j = 0; j < column; ++j) {
                 answer += num[i][j] * num[i][j];
             }
         }
-        return Math.sqrt(answer);
+        return answer;
+    }
+
+    public double norm1() {
+        double answer = 0;
+        for(int i = 0; i < row; ++i) {
+            for(int j = 0; j < column; ++j) {
+                answer += num[i][j];
+            }
+        }
+        return answer;
     }
 
     public void print() {
@@ -189,5 +225,19 @@ public class Matrix {
             }
             System.out.println();
         }
+    }
+
+    public Matrix addColumn(double[] newArr) {
+        if(newArr.length != column) {
+            throw new IllegalArgumentException("The length of this array does not equal to the column of matrix("
+                    + column + ")" );
+        }
+        Matrix answer = new Matrix(row, column + 1, this, false);
+        for(int i = 0; i < row; ++i) {
+            for(int j = 0; j < column; ++j) {
+                answer.num[i][j] = newArr[j];
+            }
+        }
+        return answer;
     }
 }
