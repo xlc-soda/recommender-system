@@ -198,6 +198,10 @@ public class Matrix {
         return answer;
     }
 
+    public double norm2() {
+        return Math.sqrt(norm2Pow());
+    }
+
     public double norm2Pow() {
         double answer = 0;
         for(int i = 0; i < row; ++i) {
