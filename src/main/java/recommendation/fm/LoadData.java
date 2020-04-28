@@ -1,73 +1,74 @@
 package recommendation.fm;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class LoadData {
-    // 导入样本特征
-    public static double[][] Loadfeature(String filename) throws IOException{
-        File f = new File(filename);
-        FileInputStream fip = new FileInputStream(f);
-        // 构建FileInputStream对象
-        InputStreamReader reader = new InputStreamReader(fip,"UTF-8");
-        // 构建InputStreamReader对象
-        StringBuffer stringBuffer = new StringBuffer();
-        while(reader.ready()) {
-            stringBuffer.append((char) reader.read());
-        }
-        reader.close();
-        fip.close();
-        // 将读入的数据流转换为字符串
-        String sb1 = stringBuffer.toString();
-        // 按行将字符串分割,计算二维数组行数
-        String [] a = sb1.split("\n");
-        int n = a.length;
-        System.out.println("二维数组行数为:" + n);
-        // 计算二维数组列数
-        String [] a0 = a[0].split("\t");
-        int m = a0.length;
-        System.out.println("二维数组列数为:" + m);
 
-        double [][] feature = new double[n][m-1];
-        for (int i = 0; i < n; i ++) {
-            String [] tmp = a[i].split("\t");
-            for(int j = 0; j < m-1; j ++) {
-                feature[i][j] = Double.parseDouble(tmp[j]);
+    private static double[][] feature;
+
+    private static double[] Label;
+
+    //导入样本特征
+    public static void Loadfeature() {
+        int row = 20;
+        int column = 10;
+        ArrayList<double[]> f = new ArrayList<>();
+        ArrayList<Double> l = new ArrayList<>();
+        try {
+            File file = new File("D:\\study\\大四上\\毕设\\文件\\csv\\filmtrust\\ratings.txt");
+            InputStreamReader inputStream = new InputStreamReader(new FileInputStream(file));
+            BufferedReader reader = new BufferedReader(inputStream);
+            String line;
+            int count = 0;
+            int maxuid = 1;
+            int maxiid = 1;
+            double maxrating = 0;
+            while ((line = reader.readLine()) != null) {
+                String[] nums = line.split(" ");
+                ++count;
+//                System.out.println(count +  " user id: " + nums[0] + " item id: " + nums[1] + " rating: " + nums[2]);
+                int uid = Integer.parseInt(nums[0]);
+                int iid = Integer.parseInt(nums[1]);
+                double rate = Double.parseDouble(nums[2]);
+                maxuid = Math.max(maxuid, uid);
+                maxiid = Math.max(maxiid, iid);
+                maxrating = Math.max(maxrating, rate);
+                if (uid > column) {
+                    break;
+                }
+                if (iid <= row) {
+                    double[] tempf = new double[row + column];
+                    tempf[uid - 1] = 1;
+                    tempf[uid + iid - 1] = 1;
+                    f.add(tempf);
+                    l.add(rate < 3.0 ? 0 : 1.0);
+                }
+            }
+//            System.out.println("maxuid: " + maxuid + " maxiid: " + maxiid + " maxrating: " + maxrating);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        feature = new double[f.size()][row + column];
+        Label = new double[f.size()];
+        for (int i = 0; i < Label.length; i++) {
+            Label[i] = l.get(i);
+            double[] tempf = f.get(i);
+            for (int j = 0; j < row + column; j++) {
+                feature[i][j] = tempf[j];
             }
         }
+    }
+
+    public static double[][] getFeature() {
         return feature;
     }
-    // 导入样本标签
-    public static double[] LoadLabel(String filename) throws IOException{
-        File f = new File(filename);
-        FileInputStream fip = new FileInputStream(f);
-        // 构建FileInputStream对象
-        InputStreamReader reader = new InputStreamReader(fip,"UTF-8");
-        // 构建InputStreamReader对象,编码与写入相同
-        StringBuffer sb = new StringBuffer();
-        while(reader.ready()) {
-            sb.append((char) reader.read());
-        }
-        reader.close();
-        fip.close();
-        // 将读入的数据流转换为字符串
-        String sb1 = sb.toString();
-        // 按行将字符串分割,计算二维数组行数
-        String [] a = sb1.split("\n");
-        int n = a.length;
-        System.out.println("二维数组行数为:" + n);
-        // 计算二维数组列数
-        String [] a0 = a[0].split("\t");
-        int m = a0.length;
-        System.out.println("二维数组列数为:" + m);
 
-        double [] Label = new double[n];
-        for (int i = 0; i < n; i ++) {
-            String [] tmp = a[i].split("\t");
-            Label[i] = Double.parseDouble(tmp[m-1]);
-        }
+    public static double[] getLabel() {
         return Label;
     }
 }

@@ -4,27 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FMtrainstocGradAscent {
-    int paraNum; //权重参数的个数
-    double rate; //学习率
-    int samNum; //样本个数
-    double[][] feature; //样本特征矩阵
-    double[] Label;//样本标签
-    int maxCycle; //最大迭代次数
-    int k; //FM算法中特征相关矩阵的列数(FM算法的度)
+    private int paraNum; //权重参数的个数
+    private double rate = 0.01; //学习率
+    private int samNum; //样本个数
+    private double[][] feature; //样本特征矩阵
+    private double[] Label;//样本标签
+    private int maxCycle = 10000; //最大迭代次数
+    private int k = 3; //FM算法中特征相关矩阵的列数(FM算法的度)
 
     //构造器
-    public FMtrainstocGradAscent(int paraNum, double rate, int samNum, double[][] feature, double[] Label, int maxCycle, int k) {
+    public FMtrainstocGradAscent(double[][] feature, double[] Label) {
         this.feature = feature;
-        this.k = k;
         this.Label = Label;
-        this.maxCycle = maxCycle;
-        this.paraNum = paraNum;
-        this.rate = rate;
-        this.samNum = samNum;
+        this.paraNum = feature[0].length;
+        this.samNum = feature.length;
     }
 
     // 权值矩阵初始化
-    public static double[] weightsInitialize(int paraNum) {
+    private static double[] weightsInitialize(int paraNum) {
         double[] W = new double[paraNum];
         for (int i = 0; i < paraNum; i++) {
             W[i] = 1.0;
@@ -33,7 +30,7 @@ public class FMtrainstocGradAscent {
     }
 
     //系数矩阵初始化
-    public static double[][] coefficientInitialize(int paraNum, int k) {
+    private static double[][] coefficientInitialize(int paraNum, int k) {
         double[][] V = new double[paraNum][k];
         for (int i = 0; i < paraNum; i++) {
             for (int j = 0; j < k; j++) {
@@ -44,7 +41,7 @@ public class FMtrainstocGradAscent {
     }
 
     //计算非线性项
-    public static double nonLinerTerm(double[] x, double[][] V) {
+    private static double nonLinerTerm(double[] x, double[][] V) {
         //参数设置
         int k = V[0].length;
         int paraNum = V.length;
@@ -60,11 +57,11 @@ public class FMtrainstocGradAscent {
             }
             tmp += (Math.pow(tmp1, 2) - tmp2);
         }
-        return tmp / 2;
+        return tmp * 0.5;
     }
 
     //计算系数矩阵中元素的梯度系数的累加项
-    public static double sumTerm(double[] x, double[][] V, int k1) {
+    private static double sumTerm(double[] x, double[][] V, int k1) {
         //参数设置
         int paraNum = V.length;
         double sumterm = 0;
@@ -96,7 +93,7 @@ public class FMtrainstocGradAscent {
     }
 
     //计算损失函数值
-    public static double getCost(double[] results, double[] Label) {
+    private static double getCost(double[] results, double[] Label) {
         int n = results.length;
         double cost = 0;
         for (int i = 0; i < n; i++) {
@@ -106,10 +103,7 @@ public class FMtrainstocGradAscent {
     }
 
     //利用随机梯度训练进行FM模型训练
-    public Map<String, double[][]> Updata(double rate, double[][] feature, double[] Label, int maxCycle, int k) {
-        // 先计算样本个数和特征个数
-        int samNum = feature.length;
-        int paraNum = feature[0].length;
+    public Map<String, double[][]> Updata() {
         //初始化偏置
         double b = 0;
         //初始化权重矩阵
@@ -131,15 +125,15 @@ public class FMtrainstocGradAscent {
                 //预测结果与样本标签的差
                 double loss = Sigmoid.sigmoid(Label[i] * d) - 1;
                 //计算每个参数的梯度方向
-                b = b - rate * loss * Label[i];
+                double temp = rate * loss * Label[i];
+                b = b - temp;
                 //计算权重矩阵与系数矩阵中每个元素的梯度方向
                 for (int n = 0; n < paraNum; n++) {
                     if (feature[i][n] != 0) {
-                        W[n] = W[n] - rate * loss * Label[i] * feature[i][n];
-
+                        W[n] = W[n] - temp * feature[i][n];
                         for (int m = 0; m < k; m++) {
                             double sumterm = sumTerm(feature[i], V, m);
-                            V[n][m] = V[n][m] - rate * loss * Label[i] * (feature[i][n] * sumterm - V[n][m] * feature[i][n] * feature[i][n]);
+                            V[n][m] = V[n][m] - temp * feature[i][n] * (sumterm - V[n][m] * feature[i][n]);
                         }
                     }
                 }
