@@ -122,11 +122,12 @@ public class UserService {
     private boolean setUserOnline(String sessionId, User user) {
         Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
         long result = jedis.hset(sessionId, Configs.USER_FIELD, String.valueOf(user.getId()));
+        result += jedis.expire(sessionId, 7200);
         jedis.close();
         return result > 0;
     }
 
-    private User getUserOnline(String token) {
+    public User getUserOnline(String token) {
         Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
         String userID = jedis.hget(token, Configs.USER_FIELD);
         jedis.close();

@@ -53,7 +53,7 @@ public class Matrix {
             }
             for (int j = mat.getColumn(); j < column; ++j) {
                 if(setRandom) {
-                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
+                    this.num[i][j] = random.nextGaussian() / 2 + 0.5;
                 } else {
                     this.num[i][j] = 0;
                 }
@@ -62,7 +62,7 @@ public class Matrix {
         for (int i = mat.getRow(); i < row; ++i) {
             for (int j = 0; j < column; ++j) {
                 if(setRandom) {
-                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
+                    this.num[i][j] = random.nextGaussian() / 2 + 0.5;
                 } else {
                     this.num[i][j] = 0;
                 }
@@ -78,7 +78,7 @@ public class Matrix {
             Random random = new Random();
             for (int i = 0; i < row; ++i) {
                 for (int j = 0; j < column; ++j) {
-                    this.num[i][j] = (random.nextInt(99999998) + 1) * 0.00000001;
+                    this.num[i][j] = random.nextGaussian() / 2 + 0.5;
                 }
             }
         } else {
@@ -198,10 +198,6 @@ public class Matrix {
         return answer;
     }
 
-    public double norm2() {
-        return Math.sqrt(norm2Pow());
-    }
-
     public double norm2Pow() {
         double answer = 0;
         for(int i = 0; i < row; ++i) {
@@ -243,3 +239,5 @@ public class Matrix {
         return answer;
     }
 }
+
+// [1, 2, 3, 7, 8, 12, 13, 5, 11, 4, 15, 9, 14, 6, 17, 10, 16, 20, 19]

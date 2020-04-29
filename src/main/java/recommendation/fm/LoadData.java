@@ -45,7 +45,8 @@ public class LoadData {
                     tempf[uid - 1] = 1;
                     tempf[uid + iid - 1] = 1;
                     f.add(tempf);
-                    l.add(rate < 3.0 ? 0 : 1.0);
+//                    l.add(rate < 3.0 ? 0 : 1.0);
+                    l.add(rate);
                 }
             }
 //            System.out.println("maxuid: " + maxuid + " maxiid: " + maxiid + " maxrating: " + maxrating);

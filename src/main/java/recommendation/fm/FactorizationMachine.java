@@ -2,6 +2,7 @@ package recommendation.fm;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class FactorizationMachine {
     private static int paraNum; //权重参数的个数
@@ -24,7 +25,7 @@ public class FactorizationMachine {
     }
 
     // 权值矩阵初始化
-    private static double[] weightsInitialize(int paraNum) {
+    private double[] weightsInitialize(int paraNum) {
         double[] W = new double[paraNum];
         for (int i = 0; i < paraNum; i++) {
             W[i] = 1.0;
@@ -33,18 +34,19 @@ public class FactorizationMachine {
     }
 
     //系数矩阵初始化
-    private static double[][] coefficientInitialize(int paraNum, int k) {
+    private double[][] coefficientInitialize(int paraNum, int k) {
         double[][] V = new double[paraNum][k];
+        Random random = new Random();
         for (int i = 0; i < paraNum; i++) {
             for (int j = 0; j < k; j++) {
-                V[i][j] = (Math.random() - 0.5) * 8.0;
+                V[i][j] = random.nextGaussian();
             }
         }
         return V;
     }
 
     //计算非线性项
-    private static double nonLinerTerm(double[] x, double[][] V) {
+    private double nonLinerTerm(double[] x, double[][] V) {
         //参数设置
         int k = V[0].length;
         int paraNum = V.length;
@@ -64,7 +66,7 @@ public class FactorizationMachine {
     }
 
     //计算系数矩阵中元素的梯度系数的累加项
-    private static double sumTerm(double[] x, double[][] V, int k1) {
+    private double sumTerm(double[] x, double[][] V, int k1) {
         //参数设置
         int paraNum = V.length;
         double sumterm = 0;
@@ -75,7 +77,7 @@ public class FactorizationMachine {
     }
 
     //预测样本结果
-    public static double[] predict() {
+    public double[] predict() {
         int n = feature.length;
         int m = feature[0].length;
         double[] results = new double[n];
@@ -96,7 +98,7 @@ public class FactorizationMachine {
     }
 
     //计算损失函数值
-    private static double getCost(double[] results, double[] Label) {
+    private double getCost(double[] results, double[] Label) {
         int n = results.length;
         double cost = 0;
         for (int i = 0; i < n; i++) {
@@ -126,7 +128,7 @@ public class FactorizationMachine {
                 // 样本到分离超平面的几何距离
                 double d = b + LinerTerm + interaction;
                 //预测结果与样本标签的差
-                double loss = Sigmoid.sigmoid(Label[i] * d) - 1;
+                double loss = Sigmoid.sigmoid(d * Label[i]) - 1;
                 //计算每个参数的梯度方向
                 double temp = rate * loss * Label[i];
                 b = b - temp;
