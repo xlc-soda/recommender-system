@@ -13,7 +13,7 @@ public class LoadData {
     private static double[] Label;
 
     //导入样本特征
-    public static void Loadfeature() {
+    public static void loadFeature() {
         int row = 20;
         int column = 10;
         ArrayList<double[]> f = new ArrayList<>();

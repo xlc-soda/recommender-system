@@ -6,12 +6,12 @@ import java.util.Map;
 public class FMMain {
     public static void main(String[] args) {
         // 导入样本特征和标签
-        LoadData.Loadfeature();
+        LoadData.loadFeature();
         double[][] feature = LoadData.getFeature();
-        double[] Label = LoadData.getLabel();
+        double[] label = LoadData.getLabel();
         //FM模型训练
-        FMtrainstocGradAscent FM = new FMtrainstocGradAscent(feature, Label);
-        Map<String, double[][]> m = FM.Updata();
+        FactorizationMachine factorizationMachine = new FactorizationMachine(feature, label);
+        Map<String, double[][]> m = factorizationMachine.train();
         //将Map中的数据导入到ArrayList中
         ArrayList<double[][]> valuesList = new ArrayList<double[][]>(m.values());
         double[][] V = valuesList.get(0);
@@ -45,6 +45,12 @@ public class FMMain {
         System.out.println("W: ");
         for (int i = 0; i < W.length; ++i) {
             System.out.print(W[i] + " ");
+        }
+        System.out.println();
+        double[] predict = factorizationMachine.predict();
+        System.out.println("predict: ");
+        for(int i = 0; i < predict.length; ++i) {
+            System.out.println(i + " label: " + label[i] + " predict: " + predict[i]);
         }
         System.out.println();
     }

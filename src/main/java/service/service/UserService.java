@@ -38,10 +38,11 @@ public class UserService {
             data.put("userInfo", userInfo);
             data.put("token", sessionId);
             // redis里记录登录信息
-            Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
-            jedis.hset(sessionId, Configs.USER_FIELD, String.valueOf(user.getId()));
-            jedis.close();
-            return jsonService.getJsonResult(0, "成功", data);
+            if(setUserOnline(sessionId, user)) {
+                return jsonService.getJsonResult(0, "成功", data);
+            } else {
+                return jsonService.getJsonResult(501, "用户名不存在或密码不正确", null);
+            }
         } else {
             return jsonService.getJsonResult(501, "用户名不存在或密码不正确", null);
         }
@@ -118,9 +119,16 @@ public class UserService {
         return user;
     }
 
-    public User getUserOnline(String sessionId) {
+    private boolean setUserOnline(String sessionId, User user) {
         Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
-        String userID = jedis.hget(sessionId, Configs.USER_FIELD);
+        long result = jedis.hset(sessionId, Configs.USER_FIELD, String.valueOf(user.getId()));
+        jedis.close();
+        return result > 0;
+    }
+
+    private User getUserOnline(String token) {
+        Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
+        String userID = jedis.hget(token, Configs.USER_FIELD);
         jedis.close();
         return userMapper.selectByPrimaryKey(Integer.valueOf(userID));
     }
@@ -168,7 +176,7 @@ public class UserService {
         }
     }
 
-    public String loginByWeixin(String appid, String secret, String code, JSONObject userInfo, String rawData,
+    public String loginByWeixin(String sessionId, String appid, String secret, String code, JSONObject userInfo, String rawData,
                                 String signature, String encryptedData, String iv) {
         WxMaDefaultConfigImpl wxMaDefaultConfig = new WxMaDefaultConfigImpl();
         wxMaDefaultConfig.setAppid(appid);
@@ -194,7 +202,7 @@ public class UserService {
             userInfo.put("openId", openId);
             userInfo.put("unionId", unionId);
             JSONObject data = new JSONObject();
-            data.put("token", openId);
+            data.put("token", sessionId);
             data.put("userInfo", userInfo);
             User user = new User();
             // TODO: 确认微信登录时用户名如何存储
@@ -220,10 +228,10 @@ public class UserService {
             user.setAddTime(date);
             user.setUpdateTime(date);
             user.setDeleted(false);
-            if(userMapper.insertSelective(user) == 0) {
-                return jsonService.getJsonResult(501, "失败");
-            } else {
+            if(userMapper.insertSelective(user) > 0 && setUserOnline(sessionId, user)) {
                 return jsonService.getJsonResult(0, "成功", data);
+            } else {
+                return jsonService.getJsonResult(501, "失败");
             }
         } else {
             return jsonService.getJsonResult(501, "失败");

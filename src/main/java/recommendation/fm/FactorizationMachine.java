@@ -3,17 +3,20 @@ package recommendation.fm;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FMtrainstocGradAscent {
-    private int paraNum; //权重参数的个数
-    private double rate = 0.01; //学习率
-    private int samNum; //样本个数
-    private double[][] feature; //样本特征矩阵
-    private double[] Label;//样本标签
-    private int maxCycle = 10000; //最大迭代次数
-    private int k = 3; //FM算法中特征相关矩阵的列数(FM算法的度)
+public class FactorizationMachine {
+    private static int paraNum; //权重参数的个数
+    private static double rate = 0.01; //学习率
+    private static int samNum; //样本个数
+    private static double[][] feature; //样本特征矩阵
+    private static double[] Label;//样本标签
+    private static int maxCycle = 10000; //最大迭代次数
+    private static int k = 3; //FM算法中特征相关矩阵的列数(FM算法的度)
+    private static double[] W;
+    private static double[][] V;
+    private static double b;
 
     //构造器
-    public FMtrainstocGradAscent(double[][] feature, double[] Label) {
+    public FactorizationMachine(double[][] feature, double[] Label) {
         this.feature = feature;
         this.Label = Label;
         this.paraNum = feature[0].length;
@@ -72,7 +75,7 @@ public class FMtrainstocGradAscent {
     }
 
     //预测样本结果
-    public static double[] predict(double[][] feature, double[] W, double[][] V, double b) {
+    public static double[] predict() {
         int n = feature.length;
         int m = feature[0].length;
         double[] results = new double[n];
@@ -103,13 +106,13 @@ public class FMtrainstocGradAscent {
     }
 
     //利用随机梯度训练进行FM模型训练
-    public Map<String, double[][]> Updata() {
+    public Map<String, double[][]> train() {
         //初始化偏置
-        double b = 0;
+        b = 0;
         //初始化权重矩阵
-        double[] W = weightsInitialize(paraNum);
+        W = weightsInitialize(paraNum);
         //初始化系数矩阵
-        double[][] V = coefficientInitialize(paraNum, k);
+        V = coefficientInitialize(paraNum, k);
         // 循环迭代优化权重矩阵(随机梯度下降)
         for (int iter = 0; iter < maxCycle; iter++) {
             for (int i = 0; i < samNum; i++) {
@@ -139,7 +142,7 @@ public class FMtrainstocGradAscent {
                 }
             }
             if (iter % 100 == 0) {
-                double[] results = predict(feature, W, V, b);
+                double[] results = predict();
                 double cost = getCost(results, Label);
                 System.out.println("第" + iter + "迭代损失函数的值为:" + cost);
             }
