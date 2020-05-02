@@ -3,12 +3,13 @@ package util.redis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import util.Configs;
+import util.config.Configs;
 
 public class RedisUtil {
-    private static ThreadLocal<Jedis> threadLocal = new ThreadLocal<>();
-    private static JedisPool jedisPool;
 
+    private static ThreadLocal<Jedis> threadLocal = new ThreadLocal<>();
+
+    private static JedisPool jedisPool;
 
     static {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -36,16 +37,12 @@ public class RedisUtil {
     }
 
     public static Jedis getConnection() {
-//        if(false) {
         Jedis jedis = threadLocal.get();
         if (null == jedis) {
             jedis = jedisPool.getResource();
             threadLocal.set(jedis);
         }
         return jedis;
-//        } else {
-//            return new Jedis("master");
-//        }
     }
 
     public static void closeConnection() {

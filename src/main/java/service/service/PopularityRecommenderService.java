@@ -1,10 +1,11 @@
-package service.controller.recommender;
+package service.service;
 
 import com.alibaba.fastjson.JSON;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
+import util.logger.LoggerUtil;
 import util.redis.RedisUtil;
 
 import javax.validation.constraints.NotNull;
@@ -12,11 +13,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
-@RestController
-public class PopularityRecommender implements Recommender {
-    @Override
-    @RequestMapping(name = "/check", method = {RequestMethod.GET, RequestMethod.POST})
-    public String getRecommendResult() {
+
+@Service
+public class PopularityRecommenderService {
+
+    private static final Logger logger = Logger.getLogger(PopularityRecommenderService.class);
+    @Autowired
+    private UserService userService;
+
+    public String getRecommendResult(String sessionId) {
         ArrayList<Node> arrayList = new ArrayList<>();
         Jedis jedis = RedisUtil.getConnection();
         Set<String> set = jedis.keys("*");
@@ -33,7 +38,9 @@ public class PopularityRecommender implements Recommender {
         for (int i = 0, size = Math.min(arrayList.size(), 10); i < size; ++i) {
             hotList.add(arrayList.get(i).name);
         }
-        return JSON.toJSONString(hotList);
+        String result = JSON.toJSONString(hotList);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     private static class Node implements Comparable<Node> {

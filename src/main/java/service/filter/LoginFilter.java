@@ -2,7 +2,7 @@ package service.filter;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 import redis.clients.jedis.Jedis;
-import util.Configs;
+import util.config.Configs;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

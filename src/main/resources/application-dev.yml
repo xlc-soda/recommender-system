@@ -6,6 +6,19 @@ spring:
     password: 123
     url: jdbc:mysql://localhost:3306/librecmall
     driver-class-name: com.mysql.jdbc.Driver
+  kafka:
+    bootstrap-servers: 172.16.29.65:9092,172.16.29.64:9092,172.16.29.66:9092
+    producer:
+      retries: 2
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      auto-offset-reset: latest
+      enable-auto-commit: true
+      group-id: xlc_consumer
+      auto-commit-interval: 1000
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 mybatis:
   typeAliasesPackage: dao

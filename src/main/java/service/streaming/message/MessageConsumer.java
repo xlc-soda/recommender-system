@@ -7,13 +7,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-import util.Configs;
+import util.config.Configs;
 import util.kafka.KafkaUtil;
 import util.redis.RedisUtil;
 
 import java.util.Arrays;
 
-//import util.hbase.HbaseUtil;
+// import util.hbase.HbaseUtil;
 
 @Component
 public class MessageConsumer {

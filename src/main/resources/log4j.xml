@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "http://toolkit.alibaba-inc.com/dtd/log4j/log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <!-- 日志输出格式 -->
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss,SSS} %-5p [%t] (%C.%M:%L) %x - %m%n"/>
+        </layout>
+        <!-- 编码 -->
+        <param name="encoding" value="UTF-8"/>
+        <!--过滤器设置输出的级别-->
+        <filter class="org.apache.log4j.varia.LevelRangeFilter"/>
+    </appender>
+
+    <appender name="fileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="./logs/default.log"/>
+        <param name="append" value="false"/>
+        <param name="encoding" value="UTF-8"/>
+        <param name="threshold" value="info"/>
+        <!--是否启用缓存，默认false-->
+        <param name="BufferedIO" value="false"/>
+        <!--缓存大小，依赖上一个参数(bufferedIO), 默认缓存大小8K  -->
+        <param name="BufferSize" value="512"/>
+        <!-- 日志输出格式 -->
+        <layout class="org.apache.log4j.PatternLayout">
+            <!--<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss,SSS} %-5p [%t] (%C.%M:%L) %x - %m%n"/>-->
+            <param name="ConversionPattern" value="%C %M %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="flumeAppender" class="org.apache.flume.clients.log4jappender.Log4jAppender">
+        <param name="Hostname" value="172.16.29.65"/>
+        <!--<param name="Hostname" value="172.16.29.65:9092,172.16.29.64:9092,172.16.29.66:9092"/>-->
+        <param name="Port" value="41414"/>
+        <param name="UnsafeMode" value="true"/>
+        <param name="AvroReflectionEnabled" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <!--<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss,SSS} %-5p [%t] (%C.%M:%L) %x - %m%n" />-->
+            <param name="ConversionPattern" value="%C-%M-%m%n" />
+        </layout>
+    </appender>
+
+    <!-- 包名 -->
+    <logger name="service.service" additivity="false">
+        <!-- debug日志太多了可以改成info级别打印日志 -->
+        <level value="info"/>
+        <appender-ref ref="fileAppender"/>
+        <appender-ref ref="flumeAppender"/>
+        <!--<appender-ref ref="console"/>-->
+    </logger>
+
+    <root>
+        <level value="debug"/>
+        <appender-ref ref="console"/>
+    </root>
+</log4j:configuration>

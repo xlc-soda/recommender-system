@@ -6,7 +6,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
-import util.Configs;
+import util.config.Configs;
 
 import java.io.IOException;
 import java.util.ArrayList;

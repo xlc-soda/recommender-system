@@ -28,9 +28,9 @@ public class OrderController extends BaseController {
     }
 
     @RequestMapping(value = "/wx/order/detail", method = RequestMethod.GET)
-    public String getOrderDetail(HttpServletRequest httpServletRequest) {
+    public String getOrderDetail(HttpSession session, HttpServletRequest httpServletRequest) {
         int orderId = Integer.valueOf(httpServletRequest.getParameter("orderId"));
-        return orderService.getOrderDetail(orderId);
+        return orderService.getOrderDetail(session.getId(), orderId);
     }
 
     @RequestMapping(value = "/wx/order/submit", method = {RequestMethod.POST})
@@ -46,9 +46,9 @@ public class OrderController extends BaseController {
 
 
     @RequestMapping(value = "/wx/order/cancel", method = RequestMethod.POST)
-    public String cancelOrder(HttpServletRequest httpServletRequest) {
+    public String cancelOrder(HttpSession session, HttpServletRequest httpServletRequest) {
         int orderId = Integer.valueOf(httpServletRequest.getParameter("orderId"));
-        return orderService.cancelOrder(orderId);
+        return orderService.cancelOrder(session.getId(), orderId);
     }
 
 }

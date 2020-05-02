@@ -7,7 +7,7 @@ import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import util.Configs;
+import util.config.Configs;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,12 +36,13 @@ public class KafkaUtil {
         consumerParams.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     }
 
-    private KafkaUtil() {}
+    private KafkaUtil() {
+    }
 
     public static void createTopicIfNotExist(String topic) {
         try {
             adminClient = AdminClient.create(properties);
-            if(null != adminClient.describeTopics(Arrays.asList(topic))) {
+            if (null != adminClient.describeTopics(Arrays.asList(topic))) {
                 System.out.println("主题 " + topic + " 已存在");
                 return;
             }

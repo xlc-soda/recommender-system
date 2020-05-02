@@ -19,7 +19,7 @@ public class GoodsController extends BaseController {
     private GoodsService goodsService;
 
     @RequestMapping(value = "/wx/goods/list", method = RequestMethod.GET)
-    public String getGoodsList(HttpServletRequest httpServletRequest) {
+    public String getGoodsList(HttpSession session, HttpServletRequest httpServletRequest) {
         boolean isNew = Boolean.valueOf(httpServletRequest.getParameter("isNew"));
         boolean isHot = Boolean.valueOf(httpServletRequest.getParameter("isHot"));
         String keyword = httpServletRequest.getParameter("keyword");
@@ -29,12 +29,12 @@ public class GoodsController extends BaseController {
         int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
         String sort = httpServletRequest.getParameter("sort");
         String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsList(isNew, isHot, keyword, brandId,
+        return goodsService.getGoodsList(session.getId(), isNew, isHot, keyword, brandId,
                 categoryId, page, limit, sort, order);
     }
 
     @RequestMapping(value = "/admin/goods/list", method = RequestMethod.GET)
-    public String getGoodsListAdmin(HttpServletRequest httpServletRequest) {
+    public String getGoodsListAdmin(HttpSession session, HttpServletRequest httpServletRequest) {
         int goodsId = Integer.valueOf(httpServletRequest.getParameter("goodsId"));
         String goodsSn = httpServletRequest.getParameter("goodsSn");
         String name = httpServletRequest.getParameter("name");
@@ -42,7 +42,7 @@ public class GoodsController extends BaseController {
         int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
         String sort = httpServletRequest.getParameter("sort");
         String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsListAdmin(goodsId, goodsSn, name, page, limit, sort, order);
+        return goodsService.getGoodsListAdmin(session.getId(), goodsId, goodsSn, name, page, limit, sort, order);
     }
 
     @RequestMapping(value = "/wx/goods/detail", method = RequestMethod.GET)
@@ -51,29 +51,9 @@ public class GoodsController extends BaseController {
         return goodsService.getGoodsDetail(session.getId(), goodsId);
     }
 
-    @RequestMapping(value = "/wx/goods/info", method = RequestMethod.GET)
-    public String getGoodsInfo(HttpServletRequest httpServletRequest) {
-        int id = Integer.valueOf(httpServletRequest.getParameter("id"));
-        int page = Integer.valueOf(httpServletRequest.getParameter("page"));
-        int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
-        String sort = httpServletRequest.getParameter("sort");
-        String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsInfo(id, page, limit, sort, order);
-    }
-
-    @RequestMapping(value = "/wx/goods/related", method = RequestMethod.GET)
-    public String getGoodsRelated(HttpServletRequest httpServletRequest) {
-        int id = Integer.valueOf(httpServletRequest.getParameter("id"));
-        int page = Integer.valueOf(httpServletRequest.getParameter("page"));
-        int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
-        String sort = httpServletRequest.getParameter("sort");
-        String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsRelated(id, page, limit, sort, order);
-    }
-
     @RequestMapping(value = "/wx/goods/count", method = RequestMethod.GET)
-    public String getGoodsCount() {
-        return goodsService.getGoodsCount();
+    public String getGoodsCount(HttpSession session) {
+        return goodsService.getGoodsCount(session.getId());
     }
 
     @RequestMapping(value = "/admin/goods/update", method = RequestMethod.POST)
@@ -82,7 +62,7 @@ public class GoodsController extends BaseController {
         JSONArray specifications = jsonObject.getJSONArray("specifications");
         JSONArray products = jsonObject.getJSONArray("products");
         JSONArray attributes = jsonObject.getJSONArray("attributes");
-        return goodsService.updateGoodsDetail(goodsArray, specifications, products, attributes);
+        return goodsService.updateGoodsDetail(session.getId(), goodsArray, specifications, products, attributes);
     }
 
     @RequestMapping(value = "/admin/goods/create", method = RequestMethod.POST)
@@ -91,18 +71,18 @@ public class GoodsController extends BaseController {
         JSONArray specifications = jsonObject.getJSONArray("specifications");
         JSONArray products = jsonObject.getJSONArray("products");
         JSONArray attributes = jsonObject.getJSONArray("attributes");
-        return goodsService.createGoodsDetail(goodsArray, specifications, products, attributes);
+        return goodsService.createGoodsDetail(session.getId(), goodsArray, specifications, products, attributes);
     }
 
     @RequestMapping(value = "/admin/goods/delete", method = RequestMethod.POST)
-    public String deleteGoods(@RequestBody JSONObject jsonObject) {
+    public String deleteGoods(HttpSession session, @RequestBody JSONObject jsonObject) {
         int goodsId = jsonObject.getInteger("id");
-        return goodsService.deleteGoods(goodsId);
+        return goodsService.deleteGoods(session.getId(), goodsId);
     }
 
     @RequestMapping(value = "/admin/goods/detail", method = RequestMethod.GET)
-    public String getGoodsDetailAdmin(@RequestBody JSONObject jsonObject) {
+    public String getGoodsDetailAdmin(HttpSession session, @RequestBody JSONObject jsonObject) {
         int goodsId = jsonObject.getInteger("id");
-        return goodsService.getGoodsDetailAdmin(goodsId);
+        return goodsService.getGoodsDetailAdmin(session.getId(), goodsId);
     }
 }

@@ -27,21 +27,6 @@ public class UserController extends BaseController {
         return userService.logout(session.getId(), jsonObject);
     }
 
-    @RequestMapping(value = "/wx/auth/register", method = {RequestMethod.POST})
-    public String register(HttpSession session, @RequestBody JSONObject jsonObject) {
-        return userService.register(session.getId(), jsonObject);
-    }
-
-    @RequestMapping(value = "/wx/auth/captcha", method = {RequestMethod.POST})
-    public String getCaptcha(HttpSession session, @RequestBody JSONObject jsonObject) {
-        return userService.getCaptcha(session.getId(), jsonObject);
-    }
-
-    @RequestMapping(value = "/wx/auth/passwd", method = {RequestMethod.POST})
-    public String changePassword(HttpSession session, @RequestBody JSONObject jsonObject) {
-        return userService.changePassword(session.getId(), jsonObject);
-    }
-
     @RequestMapping(value = "/wx/auth/info", method = {RequestMethod.POST})
     public String getInfo(HttpSession session) {
         return userService.getInfo(session.getId());
@@ -53,16 +38,16 @@ public class UserController extends BaseController {
     }
 
     @RequestMapping(value = "/admin/user/list", method = {RequestMethod.GET})
-    public String listUser(HttpServletRequest httpServletRequest) {
+    public String listUser(HttpSession session, HttpServletRequest httpServletRequest) {
         String username = httpServletRequest.getParameter("username");
         String mobile = httpServletRequest.getParameter("mobile");
-        return userService.listUser(username, mobile, startPage, pageLimit);
+        return userService.listUser(session.getId(), username, mobile, startPage, pageLimit);
     }
 
     @RequestMapping(value = "/admin/user/delete", method = {RequestMethod.GET})
-    public String deleteUser(HttpServletRequest httpServletRequest) {
+    public String deleteUser(HttpSession session, HttpServletRequest httpServletRequest) {
         int userId = Integer.valueOf(httpServletRequest.getParameter("id"));
-        return userService.deleteUser(userId);
+        return userService.deleteUser(session.getId(), userId);
     }
 
     @RequestMapping(value = "/wx/auth/login_by_weixin", method = {RequestMethod.POST})

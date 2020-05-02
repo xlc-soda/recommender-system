@@ -3,14 +3,20 @@ package service.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.*;
+import util.json.JsonUtil;
+import util.logger.LoggerUtil;
 
 import java.util.List;
 
 @Service
 public class IndexService {
+
+    private static final Logger logger = Logger.getLogger(IndexService.class);
+
     @Autowired
     private BrandMapper brandMapper;
 
@@ -25,9 +31,6 @@ public class IndexService {
 
     @Autowired
     private GrouponMapper grouponMapper;
-
-    @Autowired
-    private JsonService jsonService;
 
     @Autowired
     private TopicMapper topicMapper;
@@ -164,6 +167,8 @@ public class IndexService {
             array.add(object);
         }
         data.put("floorGoodsList", floorGoodsList);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 }

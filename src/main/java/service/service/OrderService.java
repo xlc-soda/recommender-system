@@ -3,9 +3,12 @@ package service.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.*;
+import util.json.JsonUtil;
+import util.logger.LoggerUtil;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -15,6 +18,8 @@ import java.util.List;
 
 @Service
 public class OrderService {
+
+    private static final Logger logger = Logger.getLogger(OrderService.class);
 
     private static HashMap<Integer, String> hashMap = new HashMap<>();
 
@@ -39,9 +44,6 @@ public class OrderService {
 
     @Autowired
     private CouponMapper couponMapper;
-
-    @Autowired
-    private JsonService jsonService;
 
     @Autowired
     private GoodsMapper goodsMapper;
@@ -106,10 +108,12 @@ public class OrderService {
             list.add(object);
         }
         data.put("list", list);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
-    public String getOrderDetail(int orderId) {
+    public String getOrderDetail(String sessionId, int orderId) {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         JSONObject data = new JSONObject();
         JSONObject orderInfo = new JSONObject();
@@ -157,7 +161,9 @@ public class OrderService {
             goodsList.add(goods);
         }
         data.put("orderGoods", goodsList);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String createOrder(String sessionId, int cartId, int addressId, int couponId,
@@ -250,11 +256,15 @@ public class OrderService {
         order = orderMapper.selectByOrderSn(orderSn);
         JSONObject data = new JSONObject();
         data.put("orderId", order.getId());
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
-    public String cancelOrder(int orderId) {
+    public String cancelOrder(String sessionId, int orderId) {
         orderMapper.deleteByPrimaryKey(orderId);
-        return jsonService.getJsonResult(0, "成功");
+        String result = JsonUtil.getJsonResult(0, "成功");
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 }

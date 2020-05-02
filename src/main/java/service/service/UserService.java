@@ -10,11 +10,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.UserMapper;
 import me.chanjar.weixin.common.error.WxErrorException;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.User;
 import redis.clients.jedis.Jedis;
-import util.Configs;
+import util.config.Configs;
+import util.json.JsonUtil;
+import util.logger.LoggerUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -22,14 +25,14 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private static final Logger logger = Logger.getLogger(UserService.class);
+
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private JsonService jsonService;
-
     public String login(String sessionId, JSONObject jsonObject) {
         User user = getUser(jsonObject);
+        String result;
         if(null != user) {
             JSONObject userInfo = new JSONObject();
             userInfo.put("nickName", user.getNickname());
@@ -39,74 +42,65 @@ public class UserService {
             data.put("token", sessionId);
             // redis里记录登录信息
             if(setUserOnline(sessionId, user)) {
-                return jsonService.getJsonResult(0, "成功", data);
+                result = JsonUtil.getJsonResult(0, "成功", data);
             } else {
-                return jsonService.getJsonResult(501, "用户名不存在或密码不正确", null);
+                result = JsonUtil.getJsonResult(501, "用户名不存在或密码不正确", null);
             }
         } else {
-            return jsonService.getJsonResult(501, "用户名不存在或密码不正确", null);
+            result =  JsonUtil.getJsonResult(501, "用户名不存在或密码不正确", null);
         }
+        logger.info(LoggerUtil.info(sessionId, result));
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String logout(String sessionId, JSONObject jsonObject) {
         User user = getUser(jsonObject);
+        String result;
         if(null == user) {
             // redis里记录登录信息
             Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
             jedis.hdel(Configs.USER_FIELD, sessionId);
             jedis.close();
-            return jsonService.getJsonResult(0, "成功");
+            result = JsonUtil.getJsonResult(0, "成功");
         } else {
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
         }
-    }
-
-    // TODO: implement method register
-    public String register(String sessionId, JSONObject jsonObject) {
-        JSONObject result = new JSONObject();
-
-        return result.toJSONString();
-    }
-
-    // TODO: implement method getCaptcha
-    public String getCaptcha(String sessionId, JSONObject jsonObject) {
-        JSONObject result = new JSONObject();
-
-        return result.toJSONString();
-    }
-
-    // TODO: implement method changePassword
-    public String changePassword(String sessionId, JSONObject jsonObject) {
-        JSONObject result = new JSONObject();
-
-        return result.toJSONString();
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String getInfo(String sessionId) {
         User user = getUserOnline(sessionId);
+        String result;
         if(null != user) {
             JSONObject data = new JSONObject();
             data.put("gender", user.getGender());
             data.put("nickName", user.getNickname());
             data.put("mobile", user.getMobile());
             data.put("avatar", user.getAvatar());
-            return jsonService.getJsonResult(0, "成功", data);
+            result = JsonUtil.getJsonResult(0, "成功", data);
         } else {
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
         }
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String updateProfile(String sessionId, JSONObject jsonObject) {
         User user = getUserOnline(sessionId);
+        String result;
         if(null != user) {
             user.setGender(jsonObject.getByte("gender"));
             user.setNickname(jsonObject.getString("nickName"));
             user.setAvatar(jsonObject.getString("avatar"));
             userMapper.updateByPrimaryKey(user);
-            return jsonService.getJsonResult(0, "成功");
+            result = JsonUtil.getJsonResult(0, "成功");
         } else {
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
         }
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     private User getUser(JSONObject jsonObject) {
@@ -127,16 +121,16 @@ public class UserService {
         return result > 0;
     }
 
-    public User getUserOnline(String token) {
+    User getUserOnline(String token) {
         Jedis jedis = new Jedis(Configs.hosts.get("slave1"));
         String userID = jedis.hget(token, Configs.USER_FIELD);
         jedis.close();
         return userMapper.selectByPrimaryKey(Integer.valueOf(userID));
     }
 
-    public String listUser(String username, String mobile, int page, int limit) {
+    public String listUser(String sessionId, String username, String mobile, int page, int limit) {
         if("".equals(username) && "".equals(mobile)) {
-            return jsonService.getJsonResult(401, "请保证用户名和手机号至少一个不为空");
+            return JsonUtil.getJsonResult(401, "请保证用户名和手机号至少一个不为空");
         }
         JSONObject data = new JSONObject();
         JSONArray list = new JSONArray();
@@ -166,15 +160,20 @@ public class UserService {
         data.put("limit", limit);
         data.put("page", page);
         data.put("list", list);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
-    public String deleteUser(int userId) {
+    public String deleteUser(String sessionId, int userId) {
+        String result;
         if(userMapper.deleteByPrimaryKey(userId) == 0) {
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
         } else {
-            return jsonService.getJsonResult(0, "成功");
+            result = JsonUtil.getJsonResult(0, "成功");
         }
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String loginByWeixin(String sessionId, String appid, String secret, String code, JSONObject userInfo, String rawData,
@@ -187,13 +186,16 @@ public class UserService {
         wxMaService.setWxMaConfig(wxMaDefaultConfig);
         WxMaJscode2SessionResult wxMaJscode2SessionResult;
         String sessionKey, unionId;
+        String result;
         try {
              wxMaJscode2SessionResult = wxMaService.jsCode2SessionInfo(code);
              sessionKey = wxMaJscode2SessionResult.getSessionKey();
              unionId = wxMaJscode2SessionResult.getUnionid();
         } catch (WxErrorException e) {
             e.printStackTrace();
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         }
         WxMaUserService wxMaUserService = wxMaService.getUserService();
         if(wxMaUserService.checkUserInfo(sessionKey, rawData, signature)) {
@@ -230,12 +232,14 @@ public class UserService {
             user.setUpdateTime(date);
             user.setDeleted(false);
             if(userMapper.insertSelective(user) > 0 && setUserOnline(sessionId, user)) {
-                return jsonService.getJsonResult(0, "成功", data);
+                result = JsonUtil.getJsonResult(0, "成功", data);
             } else {
-                return jsonService.getJsonResult(501, "失败");
+                result = JsonUtil.getJsonResult(501, "失败");
             }
         } else {
-            return jsonService.getJsonResult(501, "失败");
+            result = JsonUtil.getJsonResult(501, "失败");
         }
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 }

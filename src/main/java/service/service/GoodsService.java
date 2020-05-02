@@ -3,9 +3,12 @@ package service.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dao.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.*;
+import util.json.JsonUtil;
+import util.logger.LoggerUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +17,8 @@ import java.util.List;
 
 @Service
 public class GoodsService {
+
+    private static final Logger logger = Logger.getLogger(GoodsService.class);
 
     @Autowired
     private BrandMapper brandMapper;
@@ -40,15 +45,12 @@ public class GoodsService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private JsonService jsonService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
     private UserMapper userMapper;
 
-    public String getGoodsList(boolean isNew, boolean isHot, String keyword, int brandId, int categoryId, int page,
+    public String getGoodsList(String sessionId, boolean isNew, boolean isHot, String keyword, int brandId, int categoryId, int page,
                                int limit, String sort, String order) {
         List<Goods> goodsList = goodsMapper.getGoodsList(isNew, isHot, keyword,
                 brandId, categoryId, page, limit * page, sort, order);
@@ -70,10 +72,12 @@ public class GoodsService {
             jsonArray.add(item);
         }
         data.put("list", jsonArray);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
-    public String getGoodsListAdmin(int goodsId, String goodsSn, String name, int page,
+    public String getGoodsListAdmin(String sessionId, int goodsId, String goodsSn, String name, int page,
                                int limit, String sort, String order) {
         List<Goods> goodsList = goodsMapper.getGoodsListAdmin(goodsId, goodsSn, name, page * limit, limit, sort, order);
         JSONObject data = new JSONObject();
@@ -107,7 +111,9 @@ public class GoodsService {
             jsonArray.add(item);
         }
         data.put("list", jsonArray);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
     public String getGoodsDetail(String sessionId, Integer goodsId) {
@@ -267,33 +273,31 @@ public class GoodsService {
         info.put("deleted", goods.getDeleted());
         info.put("detail", goods.getDetail());
         data.put("info", info);
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 
-    // TODO: recommendation related
-    public String getGoodsRelated(int id, int page, int limit, String sort, String order) {
-        return "";
+    public String getGoodsCount(String sessionId) {
+        String goodsCount = String.valueOf(goodsMapper.getGoodsCount());
+        logger.info(LoggerUtil.info(sessionId, goodsCount));
+        return goodsCount;
     }
 
-    // TODO: recommendation info
-    public String getGoodsInfo(int id, int page, int limit, String sort, String order) {
-        return "";
-    }
-
-    public String getGoodsCount() {
-        return String.valueOf(goodsMapper.getGoodsCount());
-    }
-
-    public String updateGoodsDetail(JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
+    public String updateGoodsDetail(String sessionId, JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
         boolean success = true;
         success &= updateGoods(goodsArray);
         success &= updateGoodsSpecification(specifications);
         success &= updateGoodsProduct(products);
         success &= updateGoodsAttribute(attributes);
         if(success) {
-            return jsonService.getJsonResult(501, "失败");
+            String result = JsonUtil.getJsonResult(501, "失败");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         } else {
-            return jsonService.getJsonResult(0, "成功");
+            String result = JsonUtil.getJsonResult(0, "成功");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         }
     }
 
@@ -372,16 +376,20 @@ public class GoodsService {
         return success;
     }
 
-    public String createGoodsDetail(JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
+    public String createGoodsDetail(String sessionId, JSONArray goodsArray, JSONArray specifications, JSONArray products, JSONArray attributes) {
         boolean success = true;
         success &= createGoods(goodsArray);
         success &= createGoodsSpecification(specifications);
         success &= createGoodsProduct(products);
         success &= createGoodsAttribute(attributes);
         if(success) {
-            return jsonService.getJsonResult(501, "失败");
+            String result = JsonUtil.getJsonResult(501, "失败");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         } else {
-            return jsonService.getJsonResult(0, "成功");
+            String result = JsonUtil.getJsonResult(0, "成功");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         }
     }
 
@@ -461,15 +469,19 @@ public class GoodsService {
         return success;
     }
 
-    public String deleteGoods(int goodsId) {
+    public String deleteGoods(String sessionId, int goodsId) {
         if(goodsMapper.deleteByPrimaryKey(goodsId) == 0) {
-            return jsonService.getJsonResult(501, "失败");
+            String result = JsonUtil.getJsonResult(501, "失败");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         } else {
-            return jsonService.getJsonResult(0, "成功");
+            String result = JsonUtil.getJsonResult(0, "成功");
+            logger.info(LoggerUtil.info(sessionId, result));
+            return result;
         }
     }
 
-    public String getGoodsDetailAdmin(Integer goodsId) {
+    public String getGoodsDetailAdmin(String sessionId, Integer goodsId) {
         Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
         JSONObject data = new JSONObject();
         data.put("id", goods.getId());
@@ -493,6 +505,8 @@ public class GoodsService {
         data.put("updateTime", goods.getUpdateTime());
         data.put("deleted", goods.getDeleted());
         data.put("detail", goods.getDetail());
-        return jsonService.getJsonResult(0, "成功", data);
+        String result = JsonUtil.getJsonResult(0, "成功", data);
+        logger.info(LoggerUtil.info(sessionId, result));
+        return result;
     }
 }
