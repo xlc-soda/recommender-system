@@ -20,7 +20,18 @@ public class MessageConsumer {
 
     private static KafkaConsumer<String, String> consumer = KafkaUtil.getConsumer();
 
+//    private static KafkaConsumer<String, String> consumer_test;
+
     static {
+//        HashMap<String, Object> consumerParams = new HashMap<>();
+//        consumerParams.put("bootstrap.servers", Configs.KAFKA_BROKERS);
+//        consumerParams.put("group.id", "xlc_test");
+//        consumerParams.put("auto.offset.reset", "latest");
+//        consumerParams.put("auto.commit.interval.ms", "1000");
+//        consumerParams.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+//        consumerParams.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+//        consumer_test = new KafkaConsumer<>(consumerParams);
+//        consumer_test.subscribe(Arrays.asList("xlc_test"));
         consumer.subscribe(Arrays.asList(Configs.KAFKA_TOPIC));
     }
 
@@ -48,5 +59,22 @@ public class MessageConsumer {
         }
         pipeline.sync();
     }
+//
+//    @Scheduled(initialDelay = 2000, fixedRate = 10000)
+//    private void consumeTest() {
+//        ConsumerRecords<String, String> consumerRecords = consumer_test.poll(100);
+//        System.out.println("定时消费test数据");
+//        for (ConsumerRecord<String, String> record : consumerRecords) {
+//            String value = "unknown";
+//            try {
+//                value = record.value();
+//                System.out.println("value: " + value);
+//            } catch (Exception e) {
+//                System.err.println("something went wrong at item " + value);
+//                e.printStackTrace();
+//                return;
+//            }
+//        }
+//    }
 }
 
