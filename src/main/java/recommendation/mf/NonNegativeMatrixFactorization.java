@@ -1,13 +1,16 @@
 package recommendation.mf;
 
+import org.springframework.stereotype.Component;
 import util.calculation.Matrix;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
 
+@Component
 public class NonNegativeMatrixFactorization {
 
     private Matrix V;
@@ -23,6 +26,14 @@ public class NonNegativeMatrixFactorization {
     private int base;
 
     private int round = 100;
+
+    private HashMap<Integer, Integer> userIdToColumnMap = new HashMap<>();
+
+    private HashMap<Integer, Integer> columnToUserIdMap = new HashMap<>();
+
+    private HashMap<Integer, Integer> itemIdToRowMap = new HashMap<>();
+
+    private HashMap<Integer, Integer> rowToItemIdMap = new HashMap<>();
 
     private static class Node {
         public Integer iid;
@@ -41,6 +52,7 @@ public class NonNegativeMatrixFactorization {
         this.column = v.getColumn();
     }
 
+    @PostConstruct
     public void loadData() throws IOException {
         this.row = 20;
         this.column = 10;
@@ -68,7 +80,13 @@ public class NonNegativeMatrixFactorization {
                     break;
                 }
                 if(iid <= row) {
-                    V.num[iid - 1][uid - 1] = rate;
+                    if(!userIdToColumnMap.containsKey(uid)) {
+                        columnToUserIdMap.put(uid - 1, uid);
+                        userIdToColumnMap.put(uid, uid - 1);
+                        rowToItemIdMap.put(iid - 1, iid);
+                        itemIdToRowMap.put(iid, iid - 1);
+                        V.num[iid - 1][uid - 1] = rate;
+                    }
                 }
             }
 //            System.out.println("maxuid: " + maxuid + " maxiid: " + maxiid + " maxrating: " + maxrating);
@@ -81,6 +99,14 @@ public class NonNegativeMatrixFactorization {
 
     public void trainIncr(double[] vK) {
         trainIncr(vK, this.eps);
+    }
+
+    public void trainIncr(Integer userId) {
+        userIdToColumnMap.put(userId, columnToUserIdMap.size());
+        columnToUserIdMap.put(columnToUserIdMap.size(), userId);
+        double[] vK = new double[V.getRow()];
+        vK[0] = 3.0;
+        trainIncr(vK);
     }
 
     // TODO: finish this method incr
@@ -190,7 +216,14 @@ public class NonNegativeMatrixFactorization {
         return answer + loss();
     }
 
-    public List<Integer> recommend(int uid) {
+    /**
+     * 获取目标用户的推荐结果并返回
+     *     返回前将商品id转换成原id
+     * @param uid 用户id
+     * @return
+     */
+    public ArrayList<Integer> recommend(int uid) {
+        uid = userIdToColumnMap.get(uid);
         Matrix result = W.multiply(H);
         ArrayList<Node> recommend = new ArrayList<>();
         for(int i = 0; i < V.getRow(); ++i) {
@@ -212,6 +245,9 @@ public class NonNegativeMatrixFactorization {
         ArrayList<Integer> iidList = new ArrayList<>();
         for(Node node: recommend) {
             iidList.add(node.iid);
+        }
+        for(int i = 0; i < iidList.size(); ++i) {
+            iidList.set(i, rowToItemIdMap.get(iidList.get(i)));
         }
         return iidList;
     }

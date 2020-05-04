@@ -440,4 +440,11 @@
     where counter_price > retail_price
     ORDER BY category_id;
   </select>
+
+  <select id="getNewGoods" resultMap="BaseResultMap">
+    select *
+    from librecmall_goods
+    where is_new = 1
+    group by category_id;
+  </select>
 </mapper>

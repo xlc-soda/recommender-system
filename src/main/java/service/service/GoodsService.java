@@ -62,7 +62,7 @@ public class GoodsService {
         for (Goods goods : goodsList) {
             JSONObject item = new JSONObject();
             item.put("id", goods.getId());
-            item.put("name", goods.getId());
+            item.put("name", goods.getName());
             item.put("brief", goods.getBrief());
             item.put("picUrl", goods.getPicUrl());
             item.put("isNew", goods.getIsNew());
@@ -89,7 +89,7 @@ public class GoodsService {
             JSONObject item = new JSONObject();
             item.put("id", goods.getId());
             item.put("goodsSn", goods.getGoodsSn());
-            item.put("name", goods.getId());
+            item.put("name", goods.getName());
             item.put("categoryId", goods.getCategoryId());
             item.put("brandId", goods.getBrandId());
             item.put("gallery", goods.getGallery());

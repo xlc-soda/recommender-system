@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import service.service.GoodsService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @RestController
 public class GoodsController extends BaseController {
@@ -19,7 +18,8 @@ public class GoodsController extends BaseController {
     private GoodsService goodsService;
 
     @RequestMapping(value = "/wx/goods/list", method = RequestMethod.GET)
-    public String getGoodsList(HttpSession session, HttpServletRequest httpServletRequest) {
+    public String getGoodsList(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Token");
         boolean isNew = Boolean.valueOf(httpServletRequest.getParameter("isNew"));
         boolean isHot = Boolean.valueOf(httpServletRequest.getParameter("isHot"));
         String keyword = httpServletRequest.getParameter("keyword");
@@ -29,12 +29,13 @@ public class GoodsController extends BaseController {
         int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
         String sort = httpServletRequest.getParameter("sort");
         String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsList(session.getId(), isNew, isHot, keyword, brandId,
+        return goodsService.getGoodsList(header, isNew, isHot, keyword, brandId,
                 categoryId, page, limit, sort, order);
     }
 
     @RequestMapping(value = "/admin/goods/list", method = RequestMethod.GET)
-    public String getGoodsListAdmin(HttpSession session, HttpServletRequest httpServletRequest) {
+    public String getGoodsListAdmin(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Admin-Token");
         int goodsId = Integer.valueOf(httpServletRequest.getParameter("goodsId"));
         String goodsSn = httpServletRequest.getParameter("goodsSn");
         String name = httpServletRequest.getParameter("name");
@@ -42,47 +43,53 @@ public class GoodsController extends BaseController {
         int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
         String sort = httpServletRequest.getParameter("sort");
         String order = httpServletRequest.getParameter("order");
-        return goodsService.getGoodsListAdmin(session.getId(), goodsId, goodsSn, name, page, limit, sort, order);
+        return goodsService.getGoodsListAdmin(header, goodsId, goodsSn, name, page, limit, sort, order);
     }
 
     @RequestMapping(value = "/wx/goods/detail", method = RequestMethod.GET)
-    public String getGoodsDetail(HttpSession session, HttpServletRequest httpServletRequest) {
+    public String getGoodsDetail(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Token");
         int goodsId = Integer.valueOf(httpServletRequest.getParameter("id"));
-        return goodsService.getGoodsDetail(session.getId(), goodsId);
+        return goodsService.getGoodsDetail(header, goodsId);
     }
 
     @RequestMapping(value = "/wx/goods/count", method = RequestMethod.GET)
-    public String getGoodsCount(HttpSession session) {
-        return goodsService.getGoodsCount(session.getId());
+    public String getGoodsCount(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Token");
+        return goodsService.getGoodsCount(header);
     }
 
     @RequestMapping(value = "/admin/goods/update", method = RequestMethod.POST)
-    public String updateGoodsDetail(HttpSession session, HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+    public String updateGoodsDetail(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Admin-Token");
         JSONArray goodsArray = jsonObject.getJSONObject("goods").getJSONArray("goods");
         JSONArray specifications = jsonObject.getJSONArray("specifications");
         JSONArray products = jsonObject.getJSONArray("products");
         JSONArray attributes = jsonObject.getJSONArray("attributes");
-        return goodsService.updateGoodsDetail(session.getId(), goodsArray, specifications, products, attributes);
+        return goodsService.updateGoodsDetail(header, goodsArray, specifications, products, attributes);
     }
 
     @RequestMapping(value = "/admin/goods/create", method = RequestMethod.POST)
-    public String createGoodsDetail(HttpSession session, HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+    public String createGoodsDetail(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Admin-Token");
         JSONArray goodsArray = jsonObject.getJSONObject("goods").getJSONArray("goods");
         JSONArray specifications = jsonObject.getJSONArray("specifications");
         JSONArray products = jsonObject.getJSONArray("products");
         JSONArray attributes = jsonObject.getJSONArray("attributes");
-        return goodsService.createGoodsDetail(session.getId(), goodsArray, specifications, products, attributes);
+        return goodsService.createGoodsDetail(header, goodsArray, specifications, products, attributes);
     }
 
     @RequestMapping(value = "/admin/goods/delete", method = RequestMethod.POST)
-    public String deleteGoods(HttpSession session, @RequestBody JSONObject jsonObject) {
+    public String deleteGoods(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Admin-Token");
         int goodsId = jsonObject.getInteger("id");
-        return goodsService.deleteGoods(session.getId(), goodsId);
+        return goodsService.deleteGoods(header, goodsId);
     }
 
     @RequestMapping(value = "/admin/goods/detail", method = RequestMethod.GET)
-    public String getGoodsDetailAdmin(HttpSession session, @RequestBody JSONObject jsonObject) {
+    public String getGoodsDetailAdmin(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Admin-Token");
         int goodsId = jsonObject.getInteger("id");
-        return goodsService.getGoodsDetailAdmin(session.getId(), goodsId);
+        return goodsService.getGoodsDetailAdmin(header, goodsId);
     }
 }

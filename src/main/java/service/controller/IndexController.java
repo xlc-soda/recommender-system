@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import service.service.IndexService;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class IndexController extends BaseController {
@@ -17,7 +17,8 @@ public class IndexController extends BaseController {
     private IndexService indexService;
 
     @RequestMapping(value = "/wx/home/index", method = RequestMethod.GET)
-    public String index(HttpSession session, @RequestBody JSONObject jsonObject) {
-        return indexService.index(session.getId(), jsonObject, startPage, pageLimit);
+    public String index(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
+        String header = httpServletRequest.getHeader("X-Librecmall-Token");
+        return indexService.index(header, jsonObject, startPage, pageLimit);
     }
 }

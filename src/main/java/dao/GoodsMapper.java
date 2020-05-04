@@ -81,4 +81,7 @@ public interface GoodsMapper {
     List<Goods> getFloorGoods();
 
     int getGoodsCount();
+
+    List<Goods> getNewGoods();
+
 }
