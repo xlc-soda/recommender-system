@@ -1,6 +1,9 @@
 package service.controller.recommender;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import service.service.PersonalizedRecommenderService;
 
@@ -19,10 +22,11 @@ public class PersonalizedRecommenderController {
     }
 
     @RequestMapping(value = "/wx/recommend/update")
-    public String recommendUpdate(HttpServletRequest httpServletRequest) {
+    public String recommendUpdate(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
         String header = httpServletRequest.getHeader("X-Librecmall-Token");
         Integer userId = Integer.valueOf(httpServletRequest.getParameter("userId"));
-        return personalizedRecommenderService.updateRecommend(header, userId);
+        JSONArray items = jsonObject.getJSONArray("items");
+        return personalizedRecommenderService.updateRecommend(header, userId, items);
     }
 
 }

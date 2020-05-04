@@ -66,8 +66,19 @@ public class PersonalizedRecommenderService {
         return result;
     }
 
-    public String updateRecommend(String sessionId, Integer userId) {
-        nonNegativeMatrixFactorization.trainIncr(userId);
+    /**
+     *
+     * @param sessionId token
+     * @param userId 用户id
+     * @param items ["item1 rate1", "item2, rate2", ...]
+     * @return
+     */
+    public String updateRecommend(String sessionId, Integer userId, JSONArray items) {
+        ArrayList<String> arrayList = new ArrayList<>(items.size());
+        for(int i = 0; i < items.size(); ++i) {
+            arrayList.set(i, items.getString(i));
+        }
+        nonNegativeMatrixFactorization.trainIncr(userId, arrayList);
         String result = JsonUtil.getJsonResult(0, "成功");
         logger.info(LoggerUtil.info(sessionId, result));
         return result;

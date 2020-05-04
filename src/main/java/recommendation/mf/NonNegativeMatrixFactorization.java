@@ -101,11 +101,24 @@ public class NonNegativeMatrixFactorization {
         trainIncr(vK, this.eps);
     }
 
-    public void trainIncr(Integer userId) {
+    /**
+     *
+     * @param userId 用户id
+     * @param items ["item1 rate1", "item2, rate2", ...]
+     */
+    public void trainIncr(Integer userId, ArrayList<String> items) {
         userIdToColumnMap.put(userId, columnToUserIdMap.size());
         columnToUserIdMap.put(columnToUserIdMap.size(), userId);
         double[] vK = new double[V.getRow()];
+        // 设置一个默认的喜好
         vK[0] = 3.0;
+        for (String item: items) {
+            String[] strings = item.split(" ");
+            int itemId = Integer.valueOf(strings[0]);
+            itemId = itemIdToRowMap.get(itemId);
+            double rate = Double.valueOf(strings[1]);
+            vK[itemId] = rate;
+        }
         trainIncr(vK);
     }
 
@@ -113,7 +126,7 @@ public class NonNegativeMatrixFactorization {
 
     /**
      * train with new data
-     * @param vK new column of matrix V (actually is V_(k+1) )
+     * @param vK 矩阵V新添加的一列，对应某个用户对商品的所有评分
      * @param eps limit to stop iteration
      */
     public void trainIncr(double[] vK, double eps) {
