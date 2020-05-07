@@ -18,10 +18,11 @@ import java.util.Set;
 public class PopularityRecommenderService {
 
     private static final Logger logger = Logger.getLogger(PopularityRecommenderService.class);
+    
     @Autowired
     private UserService userService;
 
-    public String getRecommendResult(String sessionId) {
+    public synchronized String getRecommendResult(String sessionId) {
         ArrayList<Node> arrayList = new ArrayList<>();
         Jedis jedis = RedisUtil.getConnection();
         Set<String> set = jedis.keys("*");

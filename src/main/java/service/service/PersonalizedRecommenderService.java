@@ -25,7 +25,7 @@ public class PersonalizedRecommenderService {
     @Autowired
     private GoodsMapper goodsMapper;
 
-    public String recommendRelated(String sessionId, Integer userId) {
+    public synchronized String recommendRelated(String sessionId, Integer userId) {
         List<Goods> newGoods = goodsMapper.getNewGoods();
         ArrayList<Integer> recommend = nonNegativeMatrixFactorization.recommend(userId);
         int size = recommend.size();
@@ -73,7 +73,7 @@ public class PersonalizedRecommenderService {
      * @param items ["item1 rate1", "item2, rate2", ...]
      * @return
      */
-    public String updateRecommend(String sessionId, Integer userId, JSONArray items) {
+    public synchronized String updateRecommend(String sessionId, Integer userId, JSONArray items) {
         ArrayList<String> arrayList = new ArrayList<>(items.size());
         for(int i = 0; i < items.size(); ++i) {
             arrayList.set(i, items.getString(i));
