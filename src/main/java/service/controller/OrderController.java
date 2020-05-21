@@ -24,7 +24,7 @@ public class OrderController extends BaseController {
         int limit = Integer.valueOf(httpServletRequest.getParameter("limit"));
         String sort = httpServletRequest.getParameter("sort");
         String order = httpServletRequest.getParameter("order");
-        return orderService.getGoodsInfo(header, showType, page, limit, sort, order);
+        return orderService.getOrderList(header, showType, page, limit, sort, order);
     }
 
     @RequestMapping(value = "/wx/order/detail", method = RequestMethod.GET)

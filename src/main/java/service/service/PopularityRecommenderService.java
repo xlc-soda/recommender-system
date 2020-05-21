@@ -13,12 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
-
 @Service
 public class PopularityRecommenderService {
 
     private static final Logger logger = Logger.getLogger(PopularityRecommenderService.class);
-    
+
     @Autowired
     private UserService userService;
 

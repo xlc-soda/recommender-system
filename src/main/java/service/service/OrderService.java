@@ -60,7 +60,7 @@ public class OrderService {
     @Autowired
     private UserMapper userMapper;
 
-    public String getGoodsInfo(String sessionId, int showType, int page,
+    public String getOrderList(String sessionId, int showType, int page,
                                int limit, String sort, String order) {
         User user = userService.getUserOnline(sessionId);
         List<Order> orders = orderMapper.selectByUserId(user.getId(), showType, page, limit * page, sort, order);
