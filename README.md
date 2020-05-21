@@ -14,6 +14,17 @@ service.controller.recommender里有的接口，简单写了下注释，不过�
 ### 接口实现
 实现方法实现在controller对应的service类里
 
+### 评分矩阵
+
+#### 默认评分
+非负矩阵分解的这个算法要求每一列至少有一个非零项，所以在NonNegativeMatrixFactorization类中的增量学习方法trainIncr中设置了一个默认项，评分为3
+
+#### 评分体系
+采用了五级分制，1是讨厌，3是中性，5是喜欢
+
+### 非负矩阵分解
+算法具体实现见NonNegativeMatrixFactorization类，在代码最上方写了一些用于讲解成员意义的注释
+
 ## tips
 方法写的参数sessionId其实是从X-Librecmall-Token中取得的用户token，名字懒得改了
 
