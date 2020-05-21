@@ -14,6 +14,11 @@ public class PopularityRecommenderController {
     @Autowired
     private PopularityRecommenderService popularityRecommenderService;
 
+    /**
+     * 获取推荐结果
+     * @param session
+     * @return
+     */
     @RequestMapping(name = "/check", method = {RequestMethod.GET, RequestMethod.POST})
     public String getRecommendResult(HttpSession session) {
         return popularityRecommenderService.getRecommendResult(session.getId());

@@ -10,8 +10,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * 方法名基本都能看懂，就不挨个翻译了
+ *  其中增量学习的方法名都会带Incr后缀
+ */
 @Component
 public class NonNegativeMatrixFactorization {
+
+    // 一些参数
 
     private Matrix V;
 
@@ -26,6 +32,10 @@ public class NonNegativeMatrixFactorization {
     private int base;
 
     private int round = 100;
+
+    // 下面四个类按名字来看就行，用来转换id和对应坐标的
+    // 比如userIdToColumnMap就是用户id转对应列号，itemIdToRowMap就是商品id转对应行号，另外两个就是反过来
+    // 评分矩阵是商品-用户的，行号代表商品，列号代表用户
 
     private HashMap<Integer, Integer> userIdToColumnMap = new HashMap<>();
 
@@ -102,17 +112,20 @@ public class NonNegativeMatrixFactorization {
     }
 
     /**
-     *
+     * 给的数据应该包含一列评分数据，格式看items注解
      * @param userId 用户id
-     * @param items ["item1 rate1", "item2, rate2", ...]
+     * @param items ["item1的id, rate1", "item2的id, rate2", ...]
      */
     public void trainIncr(Integer userId, ArrayList<String> items) {
-        userIdToColumnMap.put(userId, columnToUserIdMap.size());
-        columnToUserIdMap.put(columnToUserIdMap.size(), userId);
+        if(!userIdToColumnMap.containsKey(userId)) {
+            userIdToColumnMap.put(userId, columnToUserIdMap.size());
+            columnToUserIdMap.put(columnToUserIdMap.size(), userId);
+        }
         double[] vK = new double[V.getRow()];
         // 设置一个默认的喜好
         vK[0] = 3.0;
         for (String item: items) {
+            // 商品id和评分拆开
             String[] strings = item.split(" ");
             int itemId = Integer.valueOf(strings[0]);
             itemId = itemIdToRowMap.get(itemId);
@@ -121,8 +134,6 @@ public class NonNegativeMatrixFactorization {
         }
         trainIncr(vK);
     }
-
-    // TODO: finish this method incr
 
     /**
      * train with new data

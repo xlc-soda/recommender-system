@@ -16,6 +16,11 @@ public class PersonalizedRecommenderController {
     @Autowired
     private PersonalizedRecommenderService personalizedRecommenderService;
 
+    /**
+     * 获取个性化推荐结果
+     * @param httpServletRequest
+     * @return
+     */
     @RequestMapping(value = "/wx/goods/related")
     public String recommendRelated(HttpServletRequest httpServletRequest) {
         String header = httpServletRequest.getHeader("X-Librecmall-Token");
@@ -23,6 +28,12 @@ public class PersonalizedRecommenderController {
         return personalizedRecommenderService.recommendRelated(header, userId);
     }
 
+    /**
+     * 增量更新
+     * @param httpServletRequest
+     * @param jsonObject
+     * @return
+     */
     @RequestMapping(value = "/wx/recommend/update")
     public String recommendUpdate(HttpServletRequest httpServletRequest, @RequestBody JSONObject jsonObject) {
         String header = httpServletRequest.getHeader("X-Librecmall-Token");

@@ -26,7 +26,9 @@ public class PersonalizedRecommenderService {
     private GoodsMapper goodsMapper;
 
     public synchronized String recommendRelated(String sessionId, Integer userId) {
+        // 获取一些新商品
         List<Goods> newGoods = goodsMapper.getNewGoods();
+        // 获取推荐结果
         ArrayList<Integer> recommend = nonNegativeMatrixFactorization.recommend(userId);
         int size = recommend.size();
         HashSet<Integer> set = new HashSet<>();
@@ -67,10 +69,10 @@ public class PersonalizedRecommenderService {
     }
 
     /**
-     *
+     * 给的数据应该包含一列评分数据，格式看items注解
      * @param sessionId token
      * @param userId 用户id
-     * @param items ["item1 rate1", "item2, rate2", ...]
+     * @param items ["item1的id rate1", "item2的id, rate2", ...]
      * @return
      */
     public synchronized String updateRecommend(String sessionId, Integer userId, JSONArray items) {

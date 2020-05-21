@@ -21,15 +21,23 @@ public class PopularityRecommenderService {
     @Autowired
     private UserService userService;
 
+    /**
+     * 获取推荐结果
+     * @param sessionId
+     * @return
+     */
     public synchronized String getRecommendResult(String sessionId) {
         ArrayList<Node> arrayList = new ArrayList<>();
         Jedis jedis = RedisUtil.getConnection();
         Set<String> set = jedis.keys("*");
         String value;
         for (String key : set) {
+            // key：物品名
+            // value：热度值
             value = jedis.get(key);
             System.out.println("key: " + key + " value: " + value);
             if (value.matches("[0-9]*")) {
+                // 将键值存入ArrayList
                 arrayList.add(new Node(key, Integer.valueOf(value)));
             }
         }
